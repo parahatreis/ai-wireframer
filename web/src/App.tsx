@@ -1,26 +1,19 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { SignedIn, SignedOut, SignIn, UserButton } from "@clerk/clerk-react";
+import { ClerkProvider } from '@clerk/clerk-react'
+import { RouterProvider } from 'react-router-dom'
 
-export default function App() {
+import { clerkPublishableKey } from '@/lib/clerk'
+import { router } from '@/router'
+
+export function App() {
   return (
-    <BrowserRouter>
-      <div className="min-h-screen bg-zinc-50 text-zinc-900">
-        <header className="p-3 border-b flex justify-between">
-          <h1 className="font-semibold">AI Wireframer</h1>
-          <UserButton afterSignOutUrl="/" />
-        </header>
-        <main className="p-4">
-          <SignedIn>
-            <Routes>
-              <Route path="/" element={<div>Home</div>} />
-            </Routes>
-          </SignedIn>
-          <SignedOut>
-            <SignIn />
-          </SignedOut>
-        </main>
-      </div>
-    </BrowserRouter>
-  );
+    <ClerkProvider
+      publishableKey={clerkPublishableKey}
+      routerPush={(to) => router.navigate(to)}
+      routerReplace={(to) => router.navigate(to, { replace: true })}
+    >
+      <RouterProvider router={router} />
+    </ClerkProvider>
+  )
 }
 
+export default App
