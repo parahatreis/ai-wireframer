@@ -1,0 +1,111 @@
+version: "3.9"
+services:
+  db:
+    image: ankane/pgvector:latest
+    container_name: db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: app
+    ports: ["5432:5432"]
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    profiles: ["dev","prod"]
+    healthcheck:
+      test: ["CMD-SHELL","pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+    profiles: ["dev","prod"]
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile.dev
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/app
+      REDIS_URL: redis://redis:6379
+      CLERK_JWT_ISSUER: http://localhost
+      CLERK_JWT_AUDIENCE: local
+      CLERK_PEM_PUBLIC_KEY: "-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----"
+      SENTRY_DSN:
+    ports: ["4000:4000"]
+    depends_on: [db, redis]
+    volumes:
+      - ./api:/app
+      - /app/node_modules
+    profiles: ["dev"]
+
+  api_prod:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/app
+      REDIS_URL: redis://redis:6379
+      CLERK_JWT_ISSUER: http://localhost
+      CLERK_JWT_AUDIENCE: local
+      CLERK_PEM_PUBLIC_KEY: "-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----"
+    ports: ["4000:4000"]
+    depends_on: [db, redis]
+    profiles: ["prod"]
+
+  ai:
+    build:
+      context: ./ai
+      dockerfile: Dockerfile.dev
+    environment:
+      OPENAI_API_KEY:
+      AI_MODEL: gpt-4o-mini
+      SENTRY_DSN:
+    ports: ["5566:5566"]
+    depends_on: [db]
+    volumes:
+      - ./ai:/app
+    profiles: ["dev"]
+
+  ai_prod:
+    build:
+      context: ./ai
+      dockerfile: Dockerfile
+    environment:
+      OPENAI_API_KEY:
+      AI_MODEL: gpt-4o-mini
+    ports: ["5566:5566"]
+    depends_on: [db]
+    profiles: ["prod"]
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile.dev
+    environment:
+      VITE_API_BASE_URL: http://localhost:4000
+      VITE_AI_BASE_URL: http://localhost:5566
+      VITE_CLERK_PUBLISHABLE_KEY:
+      VITE_SENTRY_DSN:
+    ports: ["3000:3000"]
+    depends_on: [api, ai]
+    volumes:
+      - ./web:/app
+      - /app/node_modules
+    profiles: ["dev"]
+
+  web_prod:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    environment:
+      VITE_API_BASE_URL: http://api:4000
+      VITE_AI_BASE_URL: http://ai:5566
+    ports: ["3000:3000"]
+    depends_on: [api_prod, ai_prod]
+    profiles: ["prod"]
+
+volumes:
+  db_data:
+
