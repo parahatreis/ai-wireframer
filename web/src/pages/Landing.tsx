@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { Button } from '@/theme/components/button'
 import { Input } from '@/theme/components/input'
 import { Badge } from '@/theme/components/badge'
@@ -55,7 +56,12 @@ export default function Landing() {
       }}
     >
       {/* Header */}
-      <header className="opacity-100 relative z-10">
+      <motion.header 
+        className="opacity-100 relative z-10"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
           <Link to="/" className="flex items-center gap-2 text-xl font-semibold text-white h-[50px] pt-3">
             <img src={logo} alt="Logo" className="h-full" />
@@ -64,21 +70,36 @@ export default function Landing() {
             <Button variant="outline" size="default">Sign In</Button>
           </Link>
         </div>
-      </header>
+      </motion.header>
 
       {/* Hero Section */}
       <main className="mx-auto max-w-5xl px-6 py-24">
-        <div className="flex flex-col items-center text-center min-h-[100vh]">
-          <h1 className="text-7xl font-semibold tracking-tight leading-tight text-white">
+        <div className="flex flex-col items-center text-center min-h-screen">
+          <motion.h1 
+            className="text-7xl font-semibold tracking-tight leading-tight text-white"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
             Turn your ideas into <br />
             <span className="text-primary-light">wireframes instantly.</span>
-          </h1>
-          <p className="mt-6 text-xl text-foreground max-w-2xl">
+          </motion.h1>
+          <motion.p 
+            className="mt-6 text-xl text-foreground max-w-2xl"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
             Describe your app and let AI sketch it for you.
-          </p>
+          </motion.p>
 
           {/* Prompt Input */}
-          <div className="mt-16 flex w-full max-w-3xl gap-3">
+          <motion.div 
+            className="mt-16 flex w-full max-w-3xl gap-3"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+          >
             <Input
               type="text"
               placeholder="Describe your idea..."
@@ -96,22 +117,33 @@ export default function Landing() {
               <Clover size={22} />
               Generate
             </Button>
-          </div>
+          </motion.div>
 
           {/* Example Prompts */}
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+          <motion.div 
+            className="mt-10 flex flex-wrap items-center justify-center gap-3"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+          >
             <span className="text-sm font-medium text-white">Try:</span>
-            {examplePrompts.map((example) => (
-              <Badge
+            {examplePrompts.map((example, index) => (
+              <motion.div
                 key={example}
-                variant="secondary"
-                className="cursor-pointer text-sm"
-                onClick={() => handleExampleClick(example)}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, delay: 0.9 + index * 0.1 }}
               >
-                {example}
-              </Badge>
+                <Badge
+                  variant="secondary"
+                  className="cursor-pointer text-sm"
+                  onClick={() => handleExampleClick(example)}
+                >
+                  {example}
+                </Badge>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
 
         <FeaturesSection />

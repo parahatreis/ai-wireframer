@@ -1,4 +1,5 @@
 import { Sparkles, Zap, Download, Users } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 export default function FeaturesSection() {
   return (
@@ -7,19 +8,31 @@ export default function FeaturesSection() {
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent rounded-3xl blur-3xl" />
       
       <div className="relative z-10">
-        <div className="text-center mb-20">
+        <motion.div 
+          className="text-center mb-20"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.6 }}
+        >
           <h2 className="text-5xl font-bold text-white mb-4">
             Everything you need to design faster
           </h2>
           <p className="text-xl text-foreground">
             Powerful features designed for modern designers
           </p>
-        </div>
+        </motion.div>
 
         {/* Asymmetric Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Large Feature 1 - Spans 2 columns */}
-          <div className="lg:col-span-2 group relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/10 via-white/5 to-transparent backdrop-blur-sm border border-white/20 p-10 hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20">
+          <motion.div 
+            className="lg:col-span-2 group relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/10 via-white/5 to-transparent backdrop-blur-sm border border-white/20 p-10 hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-all duration-500" />
             <div className="relative z-10">
               <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary to-primary-light flex items-center justify-center mb-6 shadow-lg shadow-primary/50">
@@ -31,10 +44,16 @@ export default function FeaturesSection() {
                 from simple text descriptions. No design skills required.
               </p>
             </div>
-          </div>
+          </motion.div>
 
           {/* Feature 2 */}
-          <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-sm border border-white/20 p-8 hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20">
+          <motion.div 
+            className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-sm border border-white/20 p-8 hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
             <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-all duration-500" />
             <div className="relative z-10 h-full flex flex-col">
               <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center mb-5 shadow-lg shadow-yellow-500/50">
@@ -45,10 +64,16 @@ export default function FeaturesSection() {
                 Get your wireframes in seconds. Iterate and refine at the speed of thought.
               </p>
             </div>
-          </div>
+          </motion.div>
 
           {/* Feature 3 */}
-          <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-sm border border-white/20 p-8 hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20">
+          <motion.div 
+            className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-sm border border-white/20 p-8 hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
             <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-all duration-500" />
             <div className="relative z-10 h-full flex flex-col">
               <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center mb-5 shadow-lg shadow-blue-500/50">
@@ -59,10 +84,16 @@ export default function FeaturesSection() {
                 Seamlessly export to Figma, Sketch, or any format your workflow needs.
               </p>
             </div>
-          </div>
+          </motion.div>
 
           {/* Large Feature 4 - Spans 2 columns */}
-          <div className="lg:col-span-2 group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-sm border border-white/20 p-10 hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20">
+          <motion.div 
+            className="lg:col-span-2 group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-sm border border-white/20 p-10 hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
             <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-all duration-500" />
             <div className="relative z-10">
               <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center mb-6 shadow-lg shadow-green-500/50">
@@ -74,7 +105,7 @@ export default function FeaturesSection() {
                 collaboratively to bring the best ideas to life.
               </p>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
