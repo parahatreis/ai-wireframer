@@ -16,11 +16,8 @@ export default function Layout() {
           </Link>
 
           <nav className="flex items-center gap-2">
-            <NavLink to="/" className={navLinkClassName} end>
-              Dashboard
-            </NavLink>
-            <NavLink to="/create" className={navLinkClassName}>
-              Create
+            <NavLink to="/account" className={navLinkClassName}>
+              Account
             </NavLink>
 
             <SignedIn>

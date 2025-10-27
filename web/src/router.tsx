@@ -2,8 +2,9 @@ import { createBrowserRouter, Outlet, useLocation, Navigate } from 'react-router
 import { SignedIn, SignedOut } from '@clerk/clerk-react'
 
 import Layout from '@/components/Layout'
-import CreatePage from '@/pages/Create'
-import Dashboard from '@/pages/Dashboard'
+import Landing from '@/pages/Landing'
+import File from '@/pages/File'
+import Account from '@/pages/Account'
 import SignInPage from '@/pages/SignIn'
 import SignUpPage from '@/pages/SignUp'
 
@@ -24,22 +25,21 @@ function ProtectedLayout() {
 
 export const router = createBrowserRouter([
   // Public routes
+  { path: '/', element: <Landing /> },
+  { path: '/file/:id', element: <File /> },
   { path: '/login/*', element: <SignInPage /> },
   { path: '/register/*', element: <SignUpPage /> },
-  { path: '/create', element: <CreatePage /> },
   // Legacy auth redirects
   { path: '/sign-in/*', element: <Navigate to="/login" replace /> },
   { path: '/sign-up/*', element: <Navigate to="/register" replace /> },
 
+  // Protected routes
   {
     element: <ProtectedLayout />,
     children: [
       {
         element: <Layout />,
-        children: [
-          { path: '/', element: <Dashboard /> },
-          { path: ':id', element: <Dashboard /> },
-        ],
+        children: [{ path: '/account', element: <Account /> }],
       },
     ],
   },
