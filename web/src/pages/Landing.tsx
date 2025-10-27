@@ -46,7 +46,7 @@ export default function Landing() {
       }}
     >
       {/* Header */}
-      <header>
+      <header className="opacity-100">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
           <Link to="/" className="flex items-center gap-2 text-xl font-semibold text-white">
             <img src={logo} alt="Logo" className="w-auto h-[60px]" />

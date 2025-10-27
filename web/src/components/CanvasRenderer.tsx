@@ -12,7 +12,7 @@ export default function CanvasRenderer({ isGenerating, hasResult, gridEnabled }:
     return (
       <div className="space-y-6 p-8">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-muted border-t-primary shadow-glow" />
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-muted border-t-primary" />
           <span className="text-xl font-medium text-foreground">AI is sketching…</span>
         </div>
         <div className="space-y-4">
@@ -46,51 +46,47 @@ export default function CanvasRenderer({ isGenerating, hasResult, gridEnabled }:
 
   return (
     <div className={cn('h-full bg-gradient-canvas p-8', gridEnabled && 'bg-grid-pattern')}>
-      <div className="mx-auto max-w-5xl rounded-2xl border-2 border-dashed border-primary/40 bg-white/95 p-10 shadow-glow-lg backdrop-blur-sm transition-all duration-500">
+      <div className="mx-auto max-w-5xl rounded-2xl p-10 backdrop-blur-sm transition-all duration-500">
         <div className="space-y-8">
           {/* Mock wireframe content */}
-          <div className="border-b border-gray-200 pb-5">
-            <div className="h-10 w-56 rounded-lg bg-gray-200" />
+          <div className="border-b border-border pb-5">
+            <div className="h-10 w-56 rounded-lg glass-panel" />
           </div>
 
           <div className="grid grid-cols-2 gap-6">
-            <div className="space-y-4 rounded-xl border border-gray-200 p-5">
-              <div className="h-5 w-28 rounded-lg bg-gray-300" />
-              <div className="h-24 rounded-lg bg-gray-100" />
+            <div className="space-y-4 rounded-xl border border-border p-5">
+              <div className="h-5 w-28 rounded-lg glass-panel" />
+              <div className="h-24 rounded-lg glass-panel" />
             </div>
-            <div className="space-y-4 rounded-xl border border-gray-200 p-5">
-              <div className="h-5 w-28 rounded-lg bg-gray-300" />
-              <div className="h-24 rounded-lg bg-gray-100" />
+            <div className="space-y-4 rounded-xl border border-border p-5">
+              <div className="h-5 w-28 rounded-lg glass-panel" />
+              <div className="h-24 rounded-lg glass-panel" />
             </div>
           </div>
 
-          <div className="rounded-xl border border-gray-200 p-7">
-            <div className="mb-5 h-7 w-36 rounded-lg bg-gray-300" />
+          <div className="rounded-xl border border-border p-7">
+            <div className="mb-5 h-7 w-36 rounded-lg glass-panel" />
             <div className="space-y-3">
-              <div className="h-4 w-full rounded-lg bg-gray-100" />
-              <div className="h-4 w-5/6 rounded-lg bg-gray-100" />
-              <div className="h-4 w-4/6 rounded-lg bg-gray-100" />
+              <div className="h-4 w-full rounded-lg glass-panel" />
+              <div className="h-4 w-5/6 rounded-lg glass-panel" />
+              <div className="h-4 w-4/6 rounded-lg glass-panel" />
             </div>
           </div>
 
           <div className="grid grid-cols-3 gap-4">
-            <div className="space-y-3 rounded-xl border border-gray-200 p-4">
-              <div className="h-20 rounded-lg bg-gray-200" />
-              <div className="h-3 w-full rounded-lg bg-gray-100" />
+            <div className="space-y-3 rounded-xl border border-border p-4">
+              <div className="h-20 rounded-lg glass-panel" />
+              <div className="h-3 w-full rounded-lg glass-panel" />
             </div>
-            <div className="space-y-3 rounded-xl border border-gray-200 p-4">
-              <div className="h-20 rounded-lg bg-gray-200" />
-              <div className="h-3 w-full rounded-lg bg-gray-100" />
+            <div className="space-y-3 rounded-xl border border-border p-4">
+              <div className="h-20 rounded-lg glass-panel" />
+              <div className="h-3 w-full rounded-lg glass-panel" />
             </div>
-            <div className="space-y-3 rounded-xl border border-gray-200 p-4">
-              <div className="h-20 rounded-lg bg-gray-200" />
-              <div className="h-3 w-full rounded-lg bg-gray-100" />
+            <div className="space-y-3 rounded-xl border border-border p-4"> 
+              <div className="h-20 rounded-lg glass-panel" />
+              <div className="h-3 w-full rounded-lg glass-panel" />
             </div>
           </div>
-        </div>
-
-        <div className="mt-8 rounded-xl bg-primary/10 border border-primary/30 p-5 text-center shadow-glow-sm">
-          <p className="text-sm font-medium text-primary">✓ Wireframe generated successfully</p>
         </div>
       </div>
     </div>

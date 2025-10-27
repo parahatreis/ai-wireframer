@@ -10,7 +10,7 @@ interface ToolbarProps {
 
 export default function Toolbar({ onRefine, onExport, onToggleGrid, gridEnabled }: ToolbarProps) {
   return (
-    <div className="flex items-center gap-3 border-b border-border glass-panel px-6 py-4 backdrop-blur-xl">
+    <div className="flex items-center gap-3 border-b border-border glass-panel px-3 backdrop-blur-xl h-[60px]">
       <Button variant="secondary" size="sm" onClick={onRefine} className="gap-2">
         <Sparkles className="h-4 w-4" />
         Refine
