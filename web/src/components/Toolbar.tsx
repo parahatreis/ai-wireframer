@@ -1,32 +1,23 @@
 import { Button } from '@/theme/components/button'
-import { Sparkles, Download, Grid3x3 } from 'lucide-react'
+import { Sparkles, Download } from 'lucide-react'
 
-interface ToolbarProps {
-  onRefine: () => void
-  onExport: () => void
-  onToggleGrid: () => void
-  gridEnabled: boolean
-}
 
-export default function Toolbar({ onRefine, onExport, onToggleGrid, gridEnabled }: ToolbarProps) {
+export default function Toolbar() {
+  const handleExportToFigma = () => {
+    console.log('Export to Figma')
+  }
+  const handleDownloadAsPDF = () => {
+    console.log('Download as PDF')
+  }
   return (
-    <div className="flex items-center gap-3 glass-panel px-3 backdrop-blur-xl h-[60px]">
-      <Button variant="secondary" size="sm" onClick={onRefine} className="gap-2">
+    <div className="flex items-center justify-end gap-3 glass-panel px-3 backdrop-blur-xl h-[60px]">
+      <Button variant="secondary" size="sm" onClick={handleExportToFigma} className="gap-2">
         <Sparkles className="h-4 w-4" />
-        Refine
+        Export to Figma
       </Button>
-      <Button variant="secondary" size="sm" onClick={onExport} className="gap-2">
+      <Button variant="secondary" size="sm" onClick={handleDownloadAsPDF} className="gap-2">
         <Download className="h-4 w-4" />
-        Export
-      </Button>
-      <Button 
-        variant={gridEnabled ? 'default' : 'secondary'} 
-        size="sm" 
-        onClick={onToggleGrid}
-        className="gap-2"
-      >
-        <Grid3x3 className="h-4 w-4" />
-        Grid
+        Download as PDF
       </Button>
     </div>
   )

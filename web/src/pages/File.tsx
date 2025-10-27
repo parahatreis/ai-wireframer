@@ -12,8 +12,7 @@ export default function File() {
   const initialPrompt = searchParams.get('prompt') || ''
 
   const [isGenerating, setIsGenerating] = useState(false)
-  const [hasResult, setHasResult] = useState(false)
-  const [gridEnabled, setGridEnabled] = useState(false)
+  const [hasResult, setHasResult] = useState(true)
   const [wireframeData, setWireframeData] = useState<WireframeResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
   const hasGeneratedRef = useRef(false)
@@ -47,19 +46,7 @@ export default function File() {
     window.history.replaceState({}, '', `/file/${id}?prompt=${encodeURIComponent(message)}`)
     handleGeneration(message)
   }
-
-  const handleRefine = () => {
-    console.log('Refine clicked')
-  }
-
-  const handleExport = () => {
-    console.log('Export clicked')
-  }
-
-  const handleToggleGrid = () => {
-    setGridEnabled((prev) => !prev)
-  }
-
+  console.log(wireframeData)
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       <Chat
@@ -67,9 +54,9 @@ export default function File() {
         onMessageSend={handleMessageSend}
         isGenerating={isGenerating}
       />
-      <div className="flex flex-1 flex-col">
-        <Toolbar onRefine={handleRefine} onExport={handleExport} onToggleGrid={handleToggleGrid} gridEnabled={gridEnabled} />
-        <div className="flex-1 overflow-y-auto">
+      <div className="flex flex-1 flex-col justify-end min-h-0">
+        <Toolbar />
+        <div className="flex-1 overflow-hidden min-h-0">
           {error ? (
             <div className="flex h-full items-center justify-center p-8">
               <div className="text-center">
@@ -88,7 +75,6 @@ export default function File() {
             <CanvasRenderer 
               isGenerating={isGenerating} 
               hasResult={hasResult} 
-              gridEnabled={gridEnabled}
               wireframeData={wireframeData}
             />
           )}

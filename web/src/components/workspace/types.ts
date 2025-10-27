@@ -1,0 +1,19 @@
+import type { WireframeElement } from '@/types/wireframe'
+
+export interface WorkspacePage {
+  id: string
+  name: string
+  x: number
+  y: number
+  w: number
+  h: number
+  description?: string
+  elements?: WireframeElement[]
+}
+
+export interface WorkspaceTransform {
+  x: number
+  y: number
+  scale: number
+}
+

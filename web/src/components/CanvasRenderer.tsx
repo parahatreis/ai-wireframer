@@ -6,11 +6,10 @@ import type { WireframeResponse } from '@/types/wireframe'
 interface CanvasRendererProps {
   isGenerating: boolean
   hasResult: boolean
-  gridEnabled: boolean
   wireframeData?: WireframeResponse | null
 }
 
-export default function CanvasRenderer({ isGenerating, hasResult, gridEnabled, wireframeData }: CanvasRendererProps) {
+export default function CanvasRenderer({ isGenerating, hasResult, wireframeData }: CanvasRendererProps) {
   if (isGenerating) {
     return (
       <div className="space-y-6 p-8">
@@ -48,16 +47,18 @@ export default function CanvasRenderer({ isGenerating, hasResult, gridEnabled, w
   }
 
   return (
-    <div className={cn('h-full bg-gradient-canvas p-8', gridEnabled && 'bg-grid-pattern')}>
-      <div className="mx-auto max-w-5xl rounded-2xl bg-white p-10 transition-all duration-500 border border-gray-200 shadow-lg">
-        {wireframeData ? (
+    <div className={cn('h-full bg-gradient-canvas')}>
+      {wireframeData ? (
+        <div className="h-full">
           <WireframeRenderer data={wireframeData} />
-        ) : (
+        </div>
+      ) : (
+        <div className="mx-auto max-w-5xl rounded-2xl bg-white p-10 transition-all duration-500 border border-gray-200 shadow-lg">
           <div className="text-center text-gray-500">
             No wireframe data available
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   )
 }

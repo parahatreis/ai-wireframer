@@ -121,7 +121,7 @@ export default function Chat({ initialPrompt, onMessageSend, isGenerating }: Cha
       </div>
 
       {/* Input Area */}
-      <div className="p-1">
+      <div className="p-2">
         <div className="glass-panel rounded-3xl flex items-end p-3 gap-3 h-[100px]">
           {/* Input */}
           <Textarea
