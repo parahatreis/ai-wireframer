@@ -4,33 +4,71 @@ import type { WireframeElement } from '@/types/wireframe'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { cn } from '@/lib/utils'
+import placeholderImage from '../../assets/images/placeholder.png'
+import { LayoutRenderer } from './LayoutRenderer'
 
 interface ElementRendererProps {
   element: WireframeElement
 }
 
+// Layout element types that should use LayoutRenderer
+const LAYOUT_TYPES = ['row', 'column', 'stack', 'grid', 'flex', 'spacer', 'divider']
+
 export function ElementRenderer({ element }: ElementRendererProps) {
-  const { type, content, styles, attributes, elements } = element
-  const style = (styles as CSSProperties) || undefined
-  const className = attributes?.class ?? ''
+  const { type, content, styles, attributes, props, elements } = element
+  const typeNormalized = type.toLowerCase()
+  
+  // Delegate to LayoutRenderer for layout elements
+  if (LAYOUT_TYPES.includes(typeNormalized)) {
+    return <LayoutRenderer element={element} />
+  }
+  
+  // Map new schema styles to CSS
+  const style: CSSProperties = {
+    padding: styles?.padding,
+    margin: styles?.margin,
+    gap: styles?.gap,
+    border: styles?.border,
+    borderRadius: styles?.borderRadius,
+    background: styles?.background,
+    color: styles?.color,
+  }
+  
+  const className = cn(
+    styles?.tw || '',
+    attributes?.className || ''
+  )
+  
+  // Extract text content from new schema
+  const textContent = content?.text || ''
+  const mediaSrc = placeholderImage;
+  const mediaAlt = content?.media?.alt || attributes?.alt
 
   const children = elements?.map((child, idx) => (
     <ElementRenderer key={`${child.type}-${idx}`} element={child} />
   ))
 
-  switch (type) {
+  switch (typeNormalized) {
     case 'header':
       return (
         <header className={cn('mb-6 text-3xl font-semibold text-slate-900', className)} style={style}>
-          {content}
+          {textContent}
           {children}
         </header>
+      )
+
+    case 'hero':
+      return (
+        <div className={cn('mb-8 text-center', className)} style={style}>
+          {textContent && <h1 className="mb-4 text-4xl font-bold">{textContent}</h1>}
+          {children}
+        </div>
       )
 
     case 'text':
       return (
         <p className={cn('text-base leading-relaxed text-slate-600', className)} style={style}>
-          {content}
+          {textContent}
           {children}
         </p>
       )
@@ -39,10 +77,12 @@ export function ElementRenderer({ element }: ElementRendererProps) {
       return (
         <Button
           type={(attributes?.type as 'submit' | 'button' | 'reset') || 'button'}
+          variant={(props?.variant as 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link') || 'default'}
+          size={(props?.size as 'default' | 'sm' | 'lg' | 'icon') || 'default'}
           className={className}
           style={style}
         >
-          {content}
+          {textContent}
           {children}
         </Button>
       )
@@ -55,13 +95,26 @@ export function ElementRenderer({ element }: ElementRendererProps) {
       )
 
     case 'input':
+    case 'textarea':
       return (
         <Input
           type={attributes?.type || 'text'}
           placeholder={attributes?.placeholder}
+          aria-label={attributes?.ariaLabel}
           className={className}
           style={style}
         />
+      )
+
+    case 'select':
+      return (
+        <select
+          className={cn('rounded-md border border-slate-300 px-3 py-2', className)}
+          aria-label={attributes?.ariaLabel}
+          style={style}
+        >
+          {children}
+        </select>
       )
 
     case 'link':
@@ -71,7 +124,7 @@ export function ElementRenderer({ element }: ElementRendererProps) {
           className={cn('text-blue-600 underline hover:text-blue-800', className)}
           style={style}
         >
-          {content}
+          {textContent}
           {children}
         </a>
       )
@@ -79,11 +132,39 @@ export function ElementRenderer({ element }: ElementRendererProps) {
     case 'image':
       return (
         <img
-          src={attributes?.src || 'https://placehold.co/400'}
-          alt={attributes?.alt || 'Image'}
+          src={mediaSrc}
+          alt={mediaAlt || 'Image'}
           className={cn('h-auto max-w-full rounded-lg border border-slate-200 object-cover', className)}
           style={style}
         />
+      )
+
+    case 'avatar':
+      return (
+        <div className={cn('inline-block h-10 w-10 overflow-hidden rounded-full', className)} style={style}>
+          {mediaSrc ? (
+            <img src={mediaSrc} alt={mediaAlt || 'Avatar'} className="h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-slate-200 text-slate-600">
+              {textContent?.[0]?.toUpperCase() || '?'}
+            </div>
+          )}
+        </div>
+      )
+
+    case 'badge':
+      return (
+        <span className={cn('inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium', className)} style={style}>
+          {textContent}
+        </span>
+      )
+
+    case 'card':
+      return (
+        <div className={cn('rounded-lg border border-slate-200 bg-white p-6 shadow-sm', className)} style={style}>
+          {textContent && <div className="mb-2">{textContent}</div>}
+          {children}
+        </div>
       )
 
     case 'nav':
@@ -96,15 +177,66 @@ export function ElementRenderer({ element }: ElementRendererProps) {
     case 'footer':
       return (
         <footer className={cn('mt-8 border-t border-slate-200 pt-6 text-sm text-slate-500', className)} style={style}>
-          {content}
+          {textContent}
           {children}
         </footer>
+      )
+
+    case 'list':
+      return (
+        <ul className={cn('space-y-2', className)} style={style}>
+          {children}
+        </ul>
+      )
+
+    case 'table':
+      return (
+        <table className={cn('w-full border-collapse', className)} style={style}>
+          {children}
+        </table>
+      )
+
+    case 'tabs':
+      return (
+        <div className={cn('space-y-4', className)} style={style}>
+          {children}
+        </div>
+      )
+
+    case 'alert':
+      return (
+        <div className={cn('rounded-lg border border-blue-200 bg-blue-50 p-4 text-blue-900', className)} style={style}>
+          {textContent}
+          {children}
+        </div>
+      )
+
+    case 'emptystate':
+      return (
+        <div className={cn('py-12 text-center text-slate-500', className)} style={style}>
+          {textContent}
+          {children}
+        </div>
+      )
+
+    case 'skeleton':
+      return (
+        <div className={cn('animate-pulse rounded-md bg-slate-200', className)} style={style}>
+          {children}
+        </div>
+      )
+
+    case 'progress':
+      return (
+        <div className={cn('h-2 w-full overflow-hidden rounded-full bg-slate-200', className)} style={style}>
+          <div className="h-full bg-blue-600" style={{ width: '50%' }} />
+        </div>
       )
 
     case 'section':
       return (
         <section className={cn('rounded-lg border border-slate-100 bg-slate-50/50 p-6', className)} style={style}>
-          {content}
+          {textContent}
           {children}
         </section>
       )
@@ -112,7 +244,7 @@ export function ElementRenderer({ element }: ElementRendererProps) {
     case 'container':
       return (
         <div className={className} style={style}>
-          {content}
+          {textContent}
           {children}
         </div>
       )
@@ -120,7 +252,7 @@ export function ElementRenderer({ element }: ElementRendererProps) {
     default:
       return (
         <div className={className} style={style}>
-          {content}
+          {textContent}
           {children}
         </div>
       )

@@ -1,0 +1,304 @@
+{
+  "meta": {
+    "title": "Web Project Management Board",
+    "description": "A streamlined project management tool for organizing and tracking web development tasks.",
+    "platform": "web",
+    "viewport": "1440x1024",
+    "planned": ""
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "purpose": "Landing page for the project management tool with an overview and CTA.",
+      "route": "/home",
+      "a11y": {
+        "contrast": "AA",
+        "focusVisible": true,
+        "touchTargetMin": 44
+      },
+      "layout": {
+        "type": "grid",
+        "columns": 12,
+        "gutter": 16,
+        "maxWidth": 1200,
+        "stickyHeader": true,
+        "stickyFooter": false
+      },
+      "states": [
+        "default",
+        "empty",
+        "loading",
+        "error"
+      ],
+      "sections": [
+        {
+          "id": "hero",
+          "role": "hero",
+          "elements": [
+            {
+              "type": "Hero",
+              "content": {
+                "text": "Manage Your Web Projects Efficiently",
+                "media": {
+                  "src": "https://placehold.co/400",
+                  "alt": "Web Project Management"
+                }
+              },
+              "props": {
+                "variant": "primary",
+                "size": "lg",
+                "asShadcn": "Hero"
+              },
+              "styles": {
+                "padding": "32px",
+                "margin": "0",
+                "gap": "16px",
+                "background": "#f9fafb",
+                "color": "#1f2937",
+                "tw": "text-center"
+              },
+              "attributes": {
+                "id": "hero-section",
+                "className": "hero",
+                "ariaLabel": "Project Management Hero"
+              },
+              "bindings": {},
+              "interactions": [],
+              "motion": {
+                "transition": "160ms ease-out",
+                "hover": "",
+                "press": "",
+                "reduceMotionSafe": true
+              },
+              "elements": []
+            }
+          ]
+        },
+        {
+          "id": "cta",
+          "role": "content",
+          "elements": [
+            {
+              "type": "Stack",
+              "content": {
+                "text": "Get started with our intuitive interface.",
+                "media": {
+                  "src": "",
+                  "alt": ""
+                }
+              },
+              "props": {
+                "asShadcn": "Stack"
+              },
+              "styles": {
+                "padding": "16px",
+                "margin": "32px 0",
+                "gap": "8px"
+              },
+              "attributes": {
+                "id": "cta-text",
+                "className": "cta-text"
+              },
+              "bindings": {},
+              "interactions": [],
+              "motion": {},
+              "elements": [
+                {
+                  "type": "Button",
+                  "content": {
+                    "text": "Get Started",
+                    "media": {
+                      "src": "",
+                      "alt": ""
+                    }
+                  },
+                  "props": {
+                    "variant": "primary",
+                    "size": "lg",
+                    "asShadcn": "Button"
+                  },
+                  "styles": {
+                    "padding": "16px 32px",
+                    "margin": "0",
+                    "gap": "0",
+                    "background": "#3b82f6",
+                    "color": "#ffffff",
+                    "tw": "block mx-auto"
+                  },
+                  "attributes": {
+                    "id": "get-started-btn",
+                    "className": "cta-button",
+                    "href": "/register"
+                  },
+                  "bindings": {},
+                  "interactions": [
+                    {
+                      "on": "click",
+                      "do": "route:/register"
+                    }
+                  ],
+                  "motion": {},
+                  "elements": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "List",
+      "purpose": "Overview of all ongoing projects with actionable items.",
+      "route": "/projects",
+      "a11y": {
+        "contrast": "AA",
+        "focusVisible": true,
+        "touchTargetMin": 44
+      },
+      "layout": {
+        "type": "grid",
+        "columns": 12,
+        "gutter": 16,
+        "maxWidth": 1200,
+        "stickyHeader": true,
+        "stickyFooter": false
+      },
+      "states": [
+        "default",
+        "empty",
+        "loading",
+        "error"
+      ],
+      "sections": [
+        {
+          "id": "project-list",
+          "role": "content",
+          "elements": [
+            {
+              "type": "List",
+              "content": {
+                "text": "Projects",
+                "media": {
+                  "src": "",
+                  "alt": ""
+                }
+              },
+              "props": {
+                "asShadcn": "List"
+              },
+              "styles": {
+                "padding": "16px",
+                "margin": "0",
+                "gap": "8px",
+                "border": "1px solid #e5e7eb"
+              },
+              "attributes": {
+                "id": "project-list",
+                "className": "list"
+              },
+              "bindings": {},
+              "interactions": [],
+              "motion": {},
+              "elements": [
+                {
+                  "type": "Card",
+                  "content": {
+                    "text": "Project Alpha",
+                    "media": {
+                      "src": "https://placehold.co/400",
+                      "alt": "Project Alpha"
+                    }
+                  },
+                  "props": {
+                    "variant": "primary",
+                    "asShadcn": "Card"
+                  },
+                  "styles": {
+                    "padding": "24px",
+                    "margin": "8px 0",
+                    "gap": "8px",
+                    "background": "#ffffff",
+                    "color": "#1f2937"
+                  },
+                  "attributes": {
+                    "id": "project-alpha",
+                    "className": "project-card"
+                  },
+                  "bindings": {},
+                  "interactions": [
+                    {
+                      "on": "click",
+                      "do": "route:/projects/alpha"
+                    }
+                  ],
+                  "motion": {},
+                  "elements": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Detail",
+      "purpose": "Detailed view of a specific project with tasks and details.",
+      "route": "/projects/:id",
+      "a11y": {
+        "contrast": "AA",
+        "focusVisible": true,
+        "touchTargetMin": 44
+      },
+      "layout": {
+        "type": "grid",
+        "columns": 12,
+        "gutter": 16,
+        "maxWidth": 1200,
+        "stickyHeader": true,
+        "stickyFooter": false
+      },
+      "states": [
+        "default",
+        "empty",
+        "loading",
+        "error"
+      ],
+      "sections": [
+        {
+          "id": "project-detail",
+          "role": "content",
+          "elements": [
+            {
+              "type": "Text",
+              "content": {
+                "text": "Project Alpha Details",
+                "media": {
+                  "src": "",
+                  "alt": ""
+                }
+              },
+              "props": {
+                "size": "lg",
+                "asShadcn": "Text"
+              },
+              "styles": {
+                "padding": "16px",
+                "margin": "0",
+                "gap": "0",
+                "color": "#1f2937"
+              },
+              "attributes": {
+                "id": "project-alpha-details",
+                "className": "project-details-title"
+              },
+              "bindings": {},
+              "interactions": [],
+              "motion": {},
+              "elements": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

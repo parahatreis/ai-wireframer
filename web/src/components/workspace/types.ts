@@ -1,4 +1,4 @@
-import type { WireframeElement } from '@/types/wireframe'
+import type { WireframeElement, WireframeSection } from '@/types/wireframe'
 
 export interface WorkspacePage {
   id: string
@@ -8,6 +8,7 @@ export interface WorkspacePage {
   w: number
   h: number
   description?: string
+  sections?: WireframeSection[]
   elements?: WireframeElement[]
 }
 
