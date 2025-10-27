@@ -1,0 +1,61 @@
+import { Clover } from 'lucide-react'
+import { Button } from '@/theme/components/button'
+
+export default function GetStartedSection() {
+  return (
+    <section className="relative mx-auto max-w-5xl px-6 py-32 mt-20">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/20 via-primary/10 to-transparent backdrop-blur-md border border-primary/30 p-16 shadow-2xl">
+        {/* Animated Background Elements */}
+        <div className="absolute top-0 left-0 w-72 h-72 bg-primary/30 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary-light/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        
+        {/* Content */}
+        <div className="relative z-10 flex flex-col items-center text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm mb-8">
+            <span className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+            </span>
+            <span className="text-sm font-medium text-white">Join thousands of designers</span>
+          </div>
+          
+          <h2 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
+            Ready to bring your<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-light via-primary to-primary-light">
+              ideas to life?
+            </span>
+          </h2>
+          
+          <p className="text-xl text-foreground mb-10 max-w-2xl leading-relaxed">
+            Start creating beautiful wireframes in seconds.<br />
+            No credit card required. No design experience needed.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Button 
+              onClick={() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              size="lg"
+              className="h-16 px-10 text-lg font-semibold shadow-2xl shadow-primary/50 hover:shadow-primary/70 transition-all"
+            >
+              <Clover className="h-5 w-5" />
+              Get Started Free
+            </Button>
+            <Button 
+              variant="outline"
+              size="lg"
+              className="h-16 px-10 text-lg font-semibold border-white/30 hover:bg-white/10"
+              onClick={() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            >
+              Watch Demo
+            </Button>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+

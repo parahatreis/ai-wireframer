@@ -6,6 +6,9 @@ import { Badge } from '@/theme/components/badge'
 import bgImage from '../../assets/images/bg3.png'
 import logo from '../../assets/images/logo.svg'
 import { Clover } from 'lucide-react'
+import FeaturesSection from '@/components/FeaturesSection'
+import GetStartedSection from '@/components/GetStartedSection'
+import Footer from '@/components/Footer'
 
 const examplePrompts = [
   // Mobile
@@ -65,7 +68,7 @@ export default function Landing() {
 
       {/* Hero Section */}
       <main className="mx-auto max-w-5xl px-6 py-24">
-        <div className="flex flex-col items-center text-center">
+        <div className="flex flex-col items-center text-center min-h-[100vh]">
           <h1 className="text-7xl font-semibold tracking-tight leading-tight text-white">
             Turn your ideas into <br />
             <span className="text-primary-light">wireframes instantly.</span>
@@ -90,7 +93,7 @@ export default function Landing() {
               size="lg"
               className="h-14"
             >
-              <Clover className="h-4 w-4" />
+              <Clover size={22} />
               Generate
             </Button>
           </div>
@@ -110,7 +113,11 @@ export default function Landing() {
             ))}
           </div>
         </div>
+
+        <FeaturesSection />
+        <GetStartedSection />
       </main>
+      <Footer />
     </div>
   )
 }
