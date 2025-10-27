@@ -17,7 +17,7 @@ export function PageBoard({ page }: PageBoardProps) {
           height: page.h,
         }}
       >
-        <div className="relative h-full w-full overflow-hidde">
+        <div className="relative h-full w-full overflow-hidden">
           <div className="text-md font-medium text-black pb-4">
             {page.name}
           </div>

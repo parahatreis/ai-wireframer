@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Textarea } from '@/theme/components/textarea'
-import { Send, Loader2, Plus, BookOpen, Sparkles } from 'lucide-react'
+import { Send, Loader2 } from 'lucide-react'
 import logo from '../../assets/images/logo.svg'
 
 interface Message {
@@ -15,9 +15,13 @@ interface ChatProps {
   initialPrompt: string
   onMessageSend: (message: string) => void
   isGenerating: boolean
+  plannedMessage?: {
+    id: string
+    content: string
+  } | null
 }
 
-export default function Chat({ initialPrompt, onMessageSend, isGenerating }: ChatProps) {
+export default function Chat({ initialPrompt, onMessageSend, isGenerating, plannedMessage }: ChatProps) {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -45,6 +49,19 @@ export default function Chat({ initialPrompt, onMessageSend, isGenerating }: Cha
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
+  useEffect(() => {
+    if (!plannedMessage?.content) return
+
+    // Remove id = 2;
+    const newMessages = messages.filter((msg) => msg.id !== '2')
+    setMessages([...newMessages, {
+      id: '2',
+      role: 'assistant',
+      content: plannedMessage.content,
+      timestamp: new Date(),
+    }])
+  }, [plannedMessage, messages])
+
   const handleSend = () => {
     if (!input.trim() || isGenerating) return
 
@@ -59,18 +76,6 @@ export default function Chat({ initialPrompt, onMessageSend, isGenerating }: Cha
     onMessageSend(input)
     setInput('')
 
-    // Simulate assistant response
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant',
-          content: 'I\'m working on updating the wireframe based on your feedback...',
-          timestamp: new Date(),
-        },
-      ])
-    }, 500)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {

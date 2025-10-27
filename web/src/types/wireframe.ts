@@ -25,6 +25,7 @@ export interface WireframeMeta {
   description?: string
   platform?: string
   viewport?: string
+  planned?: string
 }
 
 export interface WireframeResponse {

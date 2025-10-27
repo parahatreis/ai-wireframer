@@ -4,6 +4,10 @@ from litellm import completion
 from ..schemas import GenerateRequest, WireframeResponse
 from .html_converter import wireframe_to_html, save_html_file
 
+
+DEFAULT_WEB_VIEWPORT = (1440, 1024)
+DEFAULT_MOBILE_VIEWPORT = (390, 844)
+
 SYSTEM = """You are an expert UI/UX designer creating beautiful, modern wireframes. Output strictly valid JSON following this schema:
 
 {
@@ -11,7 +15,8 @@ SYSTEM = """You are an expert UI/UX designer creating beautiful, modern wirefram
     "title": "string",
     "description": "string",
     "platform": "web|mobile",
-    "viewport": "widthxheight"
+    "viewport": "widthxheight",
+    "planned": "string" // brief description of the layout plan and structure
   },
   "pages": [
     {
@@ -78,13 +83,26 @@ EXAMPLE PATTERNS:
 def generate(req: GenerateRequest) -> WireframeResponse:
   model = os.getenv("AI_MODEL", "gpt-4o-mini")
   print(f"Generating wireframe with model: {model}")
+
+  platform_hint = (req.platform or "web").lower()
+  if platform_hint not in {"web", "mobile"}:
+    platform_hint = "web"
+
+  viewport_hint_w: int
+  viewport_hint_h: int
+  if req.viewport_w and req.viewport_h:
+    viewport_hint_w, viewport_hint_h = req.viewport_w, req.viewport_h
+  else:
+    defaults = DEFAULT_MOBILE_VIEWPORT if platform_hint == "mobile" else DEFAULT_WEB_VIEWPORT
+    viewport_hint_w, viewport_hint_h = defaults
+
   resp = completion(
     model=model,
     messages=[
       {"role": "system", "content": SYSTEM},
       {
         "role": "user",
-        "content": f"Prompt: {req.prompt}. Platform:{req.platform}, Viewport:{req.viewport_w}x{req.viewport_h}",
+        "content": f"Prompt: {req.prompt}. Platform:{platform_hint}, Viewport:{viewport_hint_w}x{viewport_hint_h}",
       },
     ],
     response_format={"type": "json_object"},
@@ -117,6 +135,22 @@ def generate(req: GenerateRequest) -> WireframeResponse:
     print(f"Content: {content}")
     raise ValueError(f"Invalid JSON response from AI model: {str(e)}")
   
+  meta = data.get("meta", {})
+  platform = (meta.get("platform") or req.platform or "web").lower()
+  if platform not in {"web", "mobile"}:
+    platform = "web"
+
+  if "viewport" in meta and isinstance(meta["viewport"], str) and "x" in meta["viewport"]:
+    viewport_str = meta["viewport"]
+  else:
+    defaults = DEFAULT_MOBILE_VIEWPORT if platform == "mobile" else DEFAULT_WEB_VIEWPORT
+    viewport_str = f"{req.viewport_w or defaults[0]}x{req.viewport_h or defaults[1]}"
+    meta["viewport"] = viewport_str
+
+  meta.setdefault("planned", "")
+  meta["platform"] = platform
+  data["meta"] = meta
+
   wireframe_response = WireframeResponse(**data)
   
   # Convert to HTML and save file

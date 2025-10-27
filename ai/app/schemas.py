@@ -8,7 +8,15 @@ class GenerateRequest(BaseModel):
   viewport_h: int | None = 1024
 
 
+class WireframeMeta(BaseModel):
+  title: str | None = None
+  description: str | None = None
+  platform: str | None = None
+  viewport: str | None = None
+  planned: str | None = None
+
+
 class WireframeResponse(BaseModel):
-  meta: dict = Field(default_factory=dict)
+  meta: WireframeMeta = Field(default_factory=WireframeMeta)
   pages: list = Field(default_factory=list)
 

@@ -3,15 +3,21 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/theme/components/button'
 import { Input } from '@/theme/components/input'
 import { Badge } from '@/theme/components/badge'
-import bgImage from '../../assets/images/bg2.png'
+import bgImage from '../../assets/images/bg3.png'
 import logo from '../../assets/images/logo.svg'
+import { Clover } from 'lucide-react'
 
 const examplePrompts = [
-  'Dashboard for teachers',
-  'E-commerce product page',
-  'Social media feed',
-  'Project management board',
-]
+  // Mobile
+  "Mobile banking app home screen",
+  "Mobile chat app interface",
+  "Mobile e-commerce product page",
+
+  // Web
+  "Web dashboard with charts and sidebar",
+  "Web project management board",
+  "Web analytics dashboard for marketing",
+];
 
 export default function Landing() {
   const [prompt, setPrompt] = useState('')
@@ -52,7 +58,7 @@ export default function Landing() {
             <img src={logo} alt="Logo" className="h-full" />
           </Link>
           <Link to="/login">
-            <Button variant="outline" size="sm">Sign In</Button>
+            <Button variant="outline" size="default">Sign In</Button>
           </Link>
         </div>
       </header>
@@ -82,8 +88,9 @@ export default function Landing() {
               onClick={handleGenerate} 
               // disabled={!prompt.trim()} 
               size="lg"
-              className="h-14 px-10 font-semibold"
+              className="h-14"
             >
+              <Clover className="h-4 w-4" />
               Generate
             </Button>
           </div>
