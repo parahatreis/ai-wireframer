@@ -1,13 +1,16 @@
-import { Skeleton } from '@/ui/components/skeleton'
+import { Skeleton } from '@/theme/components/skeleton'
 import { cn } from '@/lib/utils'
+import WireframeRenderer from './WireframeRenderer'
+import type { WireframeResponse } from '@/types/wireframe'
 
 interface CanvasRendererProps {
   isGenerating: boolean
   hasResult: boolean
   gridEnabled: boolean
+  wireframeData?: WireframeResponse | null
 }
 
-export default function CanvasRenderer({ isGenerating, hasResult, gridEnabled }: CanvasRendererProps) {
+export default function CanvasRenderer({ isGenerating, hasResult, gridEnabled, wireframeData }: CanvasRendererProps) {
   if (isGenerating) {
     return (
       <div className="space-y-6 p-8">
@@ -46,48 +49,14 @@ export default function CanvasRenderer({ isGenerating, hasResult, gridEnabled }:
 
   return (
     <div className={cn('h-full bg-gradient-canvas p-8', gridEnabled && 'bg-grid-pattern')}>
-      <div className="mx-auto max-w-5xl rounded-2xl p-10 backdrop-blur-sm transition-all duration-500">
-        <div className="space-y-8">
-          {/* Mock wireframe content */}
-          <div className="border-b border-border pb-5">
-            <div className="h-10 w-56 rounded-lg glass-panel" />
+      <div className="mx-auto max-w-5xl rounded-2xl bg-white p-10 transition-all duration-500 border border-gray-200 shadow-lg">
+        {wireframeData ? (
+          <WireframeRenderer data={wireframeData} />
+        ) : (
+          <div className="text-center text-gray-500">
+            No wireframe data available
           </div>
-
-          <div className="grid grid-cols-2 gap-6">
-            <div className="space-y-4 rounded-xl border border-border p-5">
-              <div className="h-5 w-28 rounded-lg glass-panel" />
-              <div className="h-24 rounded-lg glass-panel" />
-            </div>
-            <div className="space-y-4 rounded-xl border border-border p-5">
-              <div className="h-5 w-28 rounded-lg glass-panel" />
-              <div className="h-24 rounded-lg glass-panel" />
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-border p-7">
-            <div className="mb-5 h-7 w-36 rounded-lg glass-panel" />
-            <div className="space-y-3">
-              <div className="h-4 w-full rounded-lg glass-panel" />
-              <div className="h-4 w-5/6 rounded-lg glass-panel" />
-              <div className="h-4 w-4/6 rounded-lg glass-panel" />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-3 gap-4">
-            <div className="space-y-3 rounded-xl border border-border p-4">
-              <div className="h-20 rounded-lg glass-panel" />
-              <div className="h-3 w-full rounded-lg glass-panel" />
-            </div>
-            <div className="space-y-3 rounded-xl border border-border p-4">
-              <div className="h-20 rounded-lg glass-panel" />
-              <div className="h-3 w-full rounded-lg glass-panel" />
-            </div>
-            <div className="space-y-3 rounded-xl border border-border p-4"> 
-              <div className="h-20 rounded-lg glass-panel" />
-              <div className="h-3 w-full rounded-lg glass-panel" />
-            </div>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   )

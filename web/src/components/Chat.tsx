@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Button } from '@/ui/components/button'
-import { Textarea } from '@/ui/components/textarea'
-import { Send, Loader2 } from 'lucide-react'
+import { Textarea } from '@/theme/components/textarea'
+import { Send, Loader2, Plus, BookOpen, Sparkles } from 'lucide-react'
 import logo from '../../assets/images/logo.svg'
 
 interface Message {
@@ -82,7 +81,7 @@ export default function Chat({ initialPrompt, onMessageSend, isGenerating }: Cha
   }
 
   return (
-    <div className="flex h-screen w-full flex-col border-r border-border glass-panel lg:w-[25%]">
+    <div className="flex h-screen w-full flex-col glass-panel lg:w-[25%]">
       {/* Header */}
       <header className="h-[60px] px-6">
         <Link to="/" className="flex items-center gap-2 text-xl font-semibold text-white h-[50px] pt-3">
@@ -91,17 +90,17 @@ export default function Chat({ initialPrompt, onMessageSend, isGenerating }: Cha
       </header>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4">
+      <div className="flex-1 overflow-y-auto px-3 space-y-4">
         {messages.map((message) => (
           <div
             key={message.id}
             className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-[85%] rounded-2xl px-4 py-3 ${
+              className={`max-w-[85%] rounded-2xl px-2 py-1 ${
                 message.role === 'user'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'glass-panel border border-border text-foreground'
+                  ? 'glass-panel border-none text-foreground'
+                  : 'bg-transparent text-foreground'
               }`}
             >
               <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
@@ -122,28 +121,26 @@ export default function Chat({ initialPrompt, onMessageSend, isGenerating }: Cha
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-border p-4">
-        <div className="flex gap-2">
+      <div className="p-1">
+        <div className="glass-panel rounded-3xl flex items-end p-3 gap-3 h-[100px]">
+          {/* Input */}
           <Textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Send a message..."
-            className="min-h-[60px] max-h-[120px] resize-none"
+            placeholder="Ask Cloverly..."
             disabled={isGenerating}
           />
-          <Button
+
+          {/* Send Button */}
+          <button
             onClick={handleSend}
             disabled={!input.trim() || isGenerating}
-            size="icon"
-            className="h-[60px] w-[60px] shrink-0"
+            className="h-10 w-10 rounded-full bg-gray-500 hover:bg-gray-400 disabled:bg-gray-600 disabled:opacity-50 flex items-center justify-center transition-colors shrink-0"
           >
-            <Send className="h-5 w-5" />
-          </Button>
+            <Send className="h-5 w-5 text-white" />
+          </button>
         </div>
-        <p className="mt-2 text-xs text-muted-foreground">
-          Press Enter to send, Shift + Enter for new line
-        </p>
       </div>
     </div>
   )

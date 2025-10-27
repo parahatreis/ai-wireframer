@@ -4,7 +4,7 @@ from litellm import completion
 from ..schemas import GenerateRequest, WireframeResponse
 from .html_converter import wireframe_to_html, save_html_file
 
-SYSTEM = """You output strictly valid JSON for a low-fi wireframe following this exact schema:
+SYSTEM = """You are an expert UI/UX designer creating beautiful, modern wireframes. Output strictly valid JSON following this schema:
 
 {
   "meta": {
@@ -19,7 +19,7 @@ SYSTEM = """You output strictly valid JSON for a low-fi wireframe following this
       "description": "string (optional)",
       "elements": [
         {
-          "type": "header|text|form|button|link|image|container|section|nav|footer",
+          "type": "header|text|form|button|link|image|container|section|nav|footer|input",
           "content": "string (text content)",
           "styles": {
             "camelCaseProperty": "value"
@@ -29,7 +29,9 @@ SYSTEM = """You output strictly valid JSON for a low-fi wireframe following this
             "class": "string",
             "href": "string (for links)",
             "src": "string (for images)",
-            "alt": "string (for images)"
+            "alt": "string (for images)",
+            "type": "string (for inputs)",
+            "placeholder": "string (for inputs)"
           },
           "elements": [] // nested elements (optional)
         }
@@ -38,15 +40,39 @@ SYSTEM = """You output strictly valid JSON for a low-fi wireframe following this
   ]
 }
 
-RULES:
+DESIGN PRINCIPLES:
+1. Create professional, well-structured layouts with clear visual hierarchy
+2. Use proper spacing: generous padding (2rem-3rem) and margins (1.5rem-2rem)
+3. Group related elements in containers/sections with appropriate backgrounds
+4. Use semantic structure: nav at top, main content in middle, footer at bottom
+5. Create balanced, grid-based layouts (2-3 columns for cards/features)
+6. Headers should be prominent (2rem-3rem font size)
+7. Add descriptive, realistic placeholder text
+8. Use proper form structure with labels and logical grouping
+
+STYLING GUIDELINES:
+1. Use Tailwind-style spacing: padding/margin values like "2rem", "1.5rem", "3rem"
+2. Font sizes: headers (2rem-3rem), subheaders (1.25rem-1.5rem), body (1rem)
+3. Add subtle borders: "1px solid rgba(255, 255, 255, 0.1)"
+4. Use rounded corners: borderRadius "0.5rem" to "1rem"
+5. Proper text colors: use dark text on light backgrounds
+6. Add background colors to sections: "rgba(255, 255, 255, 0.05)" for cards
+7. Create visual separation with spacing and borders
+
+STRUCTURE RULES:
 1. All elements use "type", "content", "styles", "attributes", "elements" structure
-2. Forms contain nested elements (inputs, buttons)
-3. Inputs use type="input" with attributes: {"type": "email|password|text", "placeholder": "..."}
-4. Buttons use type="button" with attributes: {"type": "submit|button"}
-5. Links use type="link" with attributes: {"href": "url"}
+2. Forms contain nested input and button elements
+3. Inputs: type="input", attributes: {"type": "email|password|text", "placeholder": "..."}
+4. Buttons: type="button", attributes: {"type": "submit|button"}
+5. Use container/section types to group related elements
 6. Use "elements" array for nesting, NOT "fields" or "buttons"
-7. All styles in camelCase inside "styles" object
-8. Keep structure flat and consistent
+7. Apply margin/padding to create whitespace and visual breathing room
+
+EXAMPLE PATTERNS:
+- Hero section: Large header (3rem), descriptive text (1.25rem), CTA button
+- Feature cards: 3-column grid, each with icon area, title (1.5rem), description
+- Forms: Stacked inputs with labels, spacing between fields, prominent submit button
+- Navigation: Horizontal layout with links, padding for spacing
 """
 
 def generate(req: GenerateRequest) -> WireframeResponse:
@@ -61,16 +87,42 @@ def generate(req: GenerateRequest) -> WireframeResponse:
         "content": f"Prompt: {req.prompt}. Platform:{req.platform}, Viewport:{req.viewport_w}x{req.viewport_h}",
       },
     ],
+    response_format={"type": "json_object"},
   )
 
-  # Assume resp.choices[0].message.content is JSON string:
-  data = json.loads(resp.choices[0].message["content"])
+  # Extract content from response
+  content = resp.choices[0].message.content
+  if not content:
+    raise ValueError("Empty response from AI model")
+  
+  print(f"Raw AI response: {content[:500]}...")  # Log first 500 chars
+  
+  # Try to extract JSON if wrapped in markdown code blocks
+  if content.strip().startswith("```"):
+    # Remove markdown code block markers
+    content = content.strip()
+    if content.startswith("```json"):
+      content = content[7:]
+    elif content.startswith("```"):
+      content = content[3:]
+    if content.endswith("```"):
+      content = content[:-3]
+    content = content.strip()
+  
+  # Parse JSON
+  try:
+    data = json.loads(content)
+  except json.JSONDecodeError as e:
+    print(f"JSON parse error: {e}")
+    print(f"Content: {content}")
+    raise ValueError(f"Invalid JSON response from AI model: {str(e)}")
+  
   wireframe_response = WireframeResponse(**data)
   
   # Convert to HTML and save file
-  html_content = wireframe_to_html(data)
-  html_filepath = save_html_file(html_content, output_dir="html_generations")
-  print(f"HTML file saved to: {html_filepath}")
+  # html_content = wireframe_to_html(data)
+  # html_filepath = save_html_file(html_content, output_dir="html_generations")
+  # print(f"HTML file saved to: {html_filepath}")
   
   return wireframe_response
 

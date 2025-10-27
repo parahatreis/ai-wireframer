@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Button } from '@/ui/components/button'
-import { Input } from '@/ui/components/input'
-import { Badge } from '@/ui/components/badge'
+import { Button } from '@/theme/components/button'
+import { Input } from '@/theme/components/input'
+import { Badge } from '@/theme/components/badge'
 import bgImage from '../../assets/images/bg2.png'
 import logo from '../../assets/images/logo.svg'
 
@@ -48,8 +48,8 @@ export default function Landing() {
       {/* Header */}
       <header className="opacity-100">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
-          <Link to="/" className="flex items-center gap-2 text-xl font-semibold text-white">
-            <img src={logo} alt="Logo" className="w-auto h-[60px]" />
+          <Link to="/" className="flex items-center gap-2 text-xl font-semibold text-white h-[50px] pt-3">
+            <img src={logo} alt="Logo" className="h-full" />
           </Link>
           <Link to="/login">
             <Button variant="outline" size="sm">Sign In</Button>
