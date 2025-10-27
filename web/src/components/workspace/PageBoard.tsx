@@ -4,9 +4,10 @@ import type { WorkspacePage } from './types'
 
 interface PageBoardProps {
   page: WorkspacePage
+  platform?: 'mobile' | 'web'
 }
 
-export function PageBoard({ page }: PageBoardProps) {
+export function PageBoard({ page, platform = 'web' }: PageBoardProps) {
   const hasSections = page.sections && page.sections.length > 0
   
   return (
@@ -26,7 +27,7 @@ export function PageBoard({ page }: PageBoardProps) {
         
         {/* Page content with fixed dimensions */}
         <div
-          className="flex flex-col overflow-auto rounded-lg border border-slate-200 bg-white shadow-lg"
+          className="relative flex flex-col overflow-auto rounded-lg border border-slate-200 bg-white shadow-lg"
           style={{
             width: page.w,
             height: page.h,
@@ -35,7 +36,11 @@ export function PageBoard({ page }: PageBoardProps) {
           {hasSections ? (
             // Render using sections (new schema)
             page.sections!.map((section, idx) => (
-              <SectionRenderer key={section.id || idx} section={section} />
+              <SectionRenderer 
+                key={section.id || idx} 
+                section={section}
+                platform={platform}
+              />
             ))
           ) : (
             // Fallback: render elements directly (backward compatibility)

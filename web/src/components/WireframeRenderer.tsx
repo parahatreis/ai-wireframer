@@ -1,5 +1,6 @@
 import type { WireframeMeta, WireframeResponse } from '@/types/wireframe'
 import { PanZoomWorkspace } from './workspace/PanZoomWorkspace'
+import { validateWireframe, isValidWireframe } from '@/utils/wireframeValidator'
 
 interface WireframeRendererProps {
   data?: WireframeResponse | null
@@ -41,7 +42,27 @@ function parseViewport(meta: WireframeMeta): { width: number; height: number } {
 }
 
 export default function WireframeRenderer({ data }: WireframeRendererProps) {
-  if (!data || !data.pages?.length) {
+  if (!data) {
+    return (
+      <div className="flex h-full items-center justify-center text-muted-foreground">
+        No data to render
+      </div>
+    )
+  }
+
+  // Validate and normalize data
+  if (!isValidWireframe(data)) {
+    console.error('Invalid wireframe data:', data)
+    return (
+      <div className="flex h-full items-center justify-center text-red-500">
+        Invalid wireframe data structure
+      </div>
+    )
+  }
+
+  const validatedData = validateWireframe(data)
+
+  if (!validatedData.pages || validatedData.pages.length === 0) {
     return (
       <div className="flex h-full items-center justify-center text-muted-foreground">
         No pages to render
@@ -49,8 +70,8 @@ export default function WireframeRenderer({ data }: WireframeRendererProps) {
     )
   }
 
-  const viewport = parseViewport(data.meta)
-  const platforms = data.meta.platforms || [data.meta.platform]
+  const viewport = parseViewport(validatedData.meta)
+  const platforms = validatedData.meta.platforms || [validatedData.meta.platform]
   const platform = platforms?.includes('mobile') ? 'mobile' : 'web'
   
   // Calculate canvas size based on viewport aspect ratio
@@ -67,7 +88,7 @@ export default function WireframeRenderer({ data }: WireframeRendererProps) {
   const columnSpacing = boardWidth + 120
   const rowSpacing = boardHeight + 160
 
-  const pages = data.pages.map((page, index) => {
+  const pages = validatedData.pages.map((page, index) => {
     // Flatten sections into elements for backward compatibility
     const elements = page.sections?.flatMap(section => section.elements) || []
     
@@ -77,6 +98,7 @@ export default function WireframeRenderer({ data }: WireframeRendererProps) {
       description: page.purpose,
       sections: page.sections,
       elements,
+      platform: platform as 'mobile' | 'web', // Pass platform info to pages
       x: (index % 2) * columnSpacing,
       y: Math.floor(index / 2) * rowSpacing,
       w: boardWidth,

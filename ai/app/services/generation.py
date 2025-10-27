@@ -76,7 +76,11 @@ def generate(req: GenerateRequest) -> WireframeResponse:
     viewport_str = f"{req.viewport_w or defaults[0]}x{req.viewport_h or defaults[1]}"
     meta["viewport"] = viewport_str
 
-  meta.setdefault("planned", "")
+  # Ensure planned field exists with meaningful default
+  if not meta.get("planned") or meta.get("planned") == "":
+    prompt_summary = req.prompt[:100] + "..." if len(req.prompt) > 100 else req.prompt
+    meta["planned"] = f"Generated a {platform} {meta.get('title', 'wireframe')} based on: {prompt_summary}"
+  
   meta["platform"] = platform
   data["meta"] = meta
 

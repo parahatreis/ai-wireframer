@@ -5,6 +5,7 @@ import CanvasRenderer from '@/components/CanvasRenderer'
 import Toolbar from '@/components/Toolbar'
 import { generateWireframe } from '@/services/api'
 import type { WireframeResponse } from '@/types/wireframe'
+import { Button } from '@/theme/components/button'
 
 export default function File() {
   const { id } = useParams()
@@ -61,13 +62,14 @@ export default function File() {
               <div className="text-center">
                 <div className="mb-4 text-6xl">⚠️</div>
                 <h3 className="text-2xl font-semibold text-foreground">Generation Failed</h3>
-                <p className="mt-3 text-lg text-muted-foreground">{error}</p>
-                <button
+                <p className="mt-3 text-lg text-muted-foreground mb-3">{error}</p>
+                <Button
                   onClick={() => handleGeneration(initialPrompt)}
-                  className="mt-6 px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
+                  variant="outline"
+                  size="default"
                 >
                   Try Again
-                </button>
+                </Button>
               </div>
             </div>
           ) : (

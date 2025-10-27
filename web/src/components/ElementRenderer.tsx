@@ -6,6 +6,7 @@ import { Input } from './ui/input'
 import { cn } from '@/lib/utils'
 import placeholderImage from '../../assets/images/placeholder.png'
 import { LayoutRenderer } from './LayoutRenderer'
+import * as LucideIcons from 'lucide-react'
 
 interface ElementRendererProps {
   element: WireframeElement
@@ -59,26 +60,35 @@ export function ElementRenderer({ element }: ElementRendererProps) {
 
     case 'hero':
       return (
-        <div className={cn('mb-8 text-center', className)} style={style}>
-          {textContent && <h1 className="mb-4 text-4xl font-bold">{textContent}</h1>}
+        <div className={cn('space-y-4', className)} style={style}>
+          {textContent && <h1 className="text-4xl font-bold md:text-5xl">{textContent}</h1>}
           {children}
         </div>
       )
 
-    case 'text':
+    case 'text': {
+      // Handle different text sizes
+      const sizeClasses: Record<string, string> = {
+        sm: 'text-sm',
+        md: 'text-base',
+        lg: 'text-lg',
+        xl: 'text-xl',
+        '2xl': 'text-2xl',
+      }
+      const sizeClass = sizeClasses[props?.size || 'md'] || 'text-base'
+      
       return (
-        <p className={cn('text-base leading-relaxed text-slate-600', className)} style={style}>
+        <p className={cn(sizeClass, 'leading-relaxed text-slate-700', className)} style={style}>
           {textContent}
           {children}
         </p>
       )
+    }
 
-    case 'button':
+    case 'button': {
       return (
         <Button
           type={(attributes?.type as 'submit' | 'button' | 'reset') || 'button'}
-          variant={(props?.variant as 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link') || 'default'}
-          size={(props?.size as 'default' | 'sm' | 'lg' | 'icon') || 'default'}
           className={className}
           style={style}
         >
@@ -86,6 +96,7 @@ export function ElementRenderer({ element }: ElementRendererProps) {
           {children}
         </Button>
       )
+    }
 
     case 'form':
       return (
@@ -129,6 +140,27 @@ export function ElementRenderer({ element }: ElementRendererProps) {
         </a>
       )
 
+    case 'icon': {
+      // Render lucide-react icons dynamically
+      // textContent should be the icon name like "Home", "Search", "User"
+      const iconName = textContent || attributes?.id || 'Circle'
+      
+      // Get icon component from lucide-react
+      type LucideIconsType = typeof LucideIcons
+      const IconComponent = (LucideIcons as LucideIconsType & Record<string, React.ComponentType<{ className?: string; style?: CSSProperties }>>)[iconName] || LucideIcons.Circle
+      
+      if (IconComponent === LucideIcons.Circle && iconName !== 'Circle') {
+        console.warn(`Icon "${iconName}" not found in lucide-react, using Circle fallback`)
+      }
+      
+      return (
+        <IconComponent 
+          className={cn('h-5 w-5', className)} 
+          style={style}
+        />
+      )
+    }
+
     case 'image':
       return (
         <img
@@ -161,9 +193,11 @@ export function ElementRenderer({ element }: ElementRendererProps) {
 
     case 'card':
       return (
-        <div className={cn('rounded-lg border border-slate-200 bg-white p-6 shadow-sm', className)} style={style}>
-          {textContent && <div className="mb-2">{textContent}</div>}
-          {children}
+        <div className={cn('rounded-lg border border-slate-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow', className)} style={style}>
+          {textContent && <h3 className="mb-2 text-lg font-semibold text-slate-900">{textContent}</h3>}
+          <div className="space-y-3">
+            {children}
+          </div>
         </div>
       )
 
@@ -184,9 +218,10 @@ export function ElementRenderer({ element }: ElementRendererProps) {
 
     case 'list':
       return (
-        <ul className={cn('space-y-2', className)} style={style}>
+        <div className={cn('space-y-2', className)} style={style}>
+          {textContent && <h3 className="mb-3 text-lg font-semibold">{textContent}</h3>}
           {children}
-        </ul>
+        </div>
       )
 
     case 'table':

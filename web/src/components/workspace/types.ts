@@ -8,6 +8,7 @@ export interface WorkspacePage {
   w: number
   h: number
   description?: string
+  platform?: 'mobile' | 'web'
   sections?: WireframeSection[]
   elements?: WireframeElement[]
 }

@@ -3,14 +3,28 @@ import { ElementRenderer } from './ElementRenderer'
 
 interface SectionRendererProps {
   section: WireframeSection
+  platform?: 'mobile' | 'web'
 }
 
-export function SectionRenderer({ section }: SectionRendererProps) {
+export function SectionRenderer({ section, platform = 'web' }: SectionRendererProps) {
   const { role, elements } = section
+  const isMobile = platform === 'mobile'
 
   // Render based on section role
   switch (role) {
     case 'header':
+      // Mobile: render at bottom, Web: render at top
+      if (isMobile) {
+        return (
+          <nav className="sticky bottom-0 z-10 mt-auto border-t border-slate-200 bg-white px-4 py-3">
+            <div className="flex items-center justify-around gap-2">
+              {elements.map((element, idx) => (
+                <ElementRenderer key={idx} element={element} />
+              ))}
+            </div>
+          </nav>
+        )
+      }
       return (
         <header className="sticky top-0 z-10 border-b border-slate-200 bg-white px-6 py-4">
           <div className="flex items-center justify-between gap-4">

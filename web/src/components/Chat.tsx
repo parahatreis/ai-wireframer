@@ -50,17 +50,23 @@ export default function Chat({ initialPrompt, onMessageSend, isGenerating, plann
   }, [messages])
 
   useEffect(() => {
+    console.log('plannedMessage', plannedMessage)
     if (!plannedMessage?.content) return
 
-    // Remove id = 2;
-    const newMessages = messages.filter((msg) => msg.id !== '2')
-    setMessages([...newMessages, {
-      id: '2',
-      role: 'assistant',
-      content: plannedMessage.content,
-      timestamp: new Date(),
-    }])
-  }, [plannedMessage, messages])
+    // Update or add the assistant message with the planned content
+    setMessages((prevMessages) => {
+      // Remove existing assistant message with id '2'
+      const filteredMessages = prevMessages.filter((msg) => msg.id !== '2')
+      
+      // Add new assistant message
+      return [...filteredMessages, {
+        id: '2',
+        role: 'assistant',
+        content: plannedMessage.content,
+        timestamp: new Date(),
+      }]
+    })
+  }, [plannedMessage])
 
   const handleSend = () => {
     if (!input.trim() || isGenerating) return

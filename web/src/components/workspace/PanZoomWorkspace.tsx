@@ -140,7 +140,7 @@ export function PanZoomWorkspace({
         }}
       >
         {pages?.map((page: WorkspacePage) => (
-          <PageBoard key={page.id} page={page} />
+          <PageBoard key={page.id} page={page} platform={page.platform} />
         ))}
       </div>
     </div>

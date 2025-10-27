@@ -40,7 +40,7 @@ export function LayoutRenderer({ element }: LayoutRendererProps) {
     case 'column':
     case 'stack':
       return (
-        <div className={cn('flex flex-col gap-4', className)} style={style}>
+        <div className={cn('flex flex-col', className)} style={style}>
           {children}
         </div>
       )
