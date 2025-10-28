@@ -121,6 +121,23 @@ export interface WireframeGrid {
   maxWidth?: number
 }
 
+export interface ToolCall {
+  id: string
+  type: 'function'
+  function: {
+    name: string
+    arguments: string
+  }
+}
+
+export interface ConversationMessage {
+  role: 'user' | 'assistant' | 'tool' | 'system'
+  content?: string
+  tool_calls?: ToolCall[]
+  tool_call_id?: string
+  name?: string
+}
+
 export interface WireframeResponse {
   meta: WireframeMeta
   grid?: WireframeGrid
@@ -128,5 +145,6 @@ export interface WireframeResponse {
     components?: string[]
   }
   pages: WireframePage[]
+  conversation?: ConversationMessage[]
 }
 

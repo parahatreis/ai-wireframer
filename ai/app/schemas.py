@@ -1,3 +1,4 @@
+from typing import Optional, List, Dict, Any
 from pydantic import BaseModel, Field
 
 
@@ -6,6 +7,7 @@ class GenerateRequest(BaseModel):
   platform: str | None = "web"
   viewport_w: int | None = 1440
   viewport_h: int | None = 1024
+  messages: Optional[List[Dict[str, Any]]] = None  # Conversation history
 
 
 class WireframeMeta(BaseModel):
@@ -19,4 +21,5 @@ class WireframeMeta(BaseModel):
 class WireframeResponse(BaseModel):
   meta: WireframeMeta = Field(default_factory=WireframeMeta)
   pages: list = Field(default_factory=list)
+  conversation: Optional[List[Dict[str, Any]]] = None  # Full conversation including tool calls
 

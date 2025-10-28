@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import placeholderImage from '../../assets/images/placeholder.png'
 import { LayoutRenderer } from './LayoutRenderer'
 import * as LucideIcons from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 interface ElementRendererProps {
   element: WireframeElement
@@ -130,14 +131,16 @@ export function ElementRenderer({ element }: ElementRendererProps) {
 
     case 'link':
       return (
-        <a
-          href={attributes?.href || '#'}
-          className={cn('text-blue-600 underline hover:text-blue-800', className)}
+        <Button
+          asChild={true}
           style={style}
+          variant="link"
         >
-          {textContent}
-          {children}
-        </a>
+          <Link to={attributes?.href || '#'}>
+            {textContent}
+            {children}
+          </Link>
+        </Button>
       )
 
     case 'icon': {

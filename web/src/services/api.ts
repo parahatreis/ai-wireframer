@@ -1,4 +1,4 @@
-import type { WireframeResponse } from '@/types/wireframe'
+import type { WireframeResponse, ConversationMessage } from '@/types/wireframe'
 
 const AI_SERVICE_URL = 'http://localhost:5566'
 
@@ -7,6 +7,7 @@ export interface GenerateRequest {
   platform?: string
   viewport_w?: number
   viewport_h?: number
+  messages?: ConversationMessage[]
 }
 
 const WEB_KEYWORDS = [/web/i, /desktop/i, /dashboard/i, /landing\s?page/i, /website/i]
@@ -40,17 +41,24 @@ export async function generateWireframe(request: GenerateRequest): Promise<Wiref
     const platform = inferPlatform(request.prompt, request.platform)
     const viewport = inferViewport(request.prompt, platform, request.viewport_w, request.viewport_h)
 
+    const requestBody: any = {
+      prompt: request.prompt,
+      platform,
+      viewport_w: viewport.w,
+      viewport_h: viewport.h,
+    }
+
+    // Include conversation history if provided
+    if (request.messages && request.messages.length > 0) {
+      requestBody.messages = request.messages
+    }
+
     const response = await fetch(`${AI_SERVICE_URL}/generate`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        prompt: request.prompt,
-        platform,
-        viewport_w: viewport.w,
-        viewport_h: viewport.h,
-      }),
+      body: JSON.stringify(requestBody),
     })
 
     if (!response.ok) {

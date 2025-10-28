@@ -16,7 +16,7 @@ export function SectionRenderer({ section, platform = 'web' }: SectionRendererPr
       // Mobile: render at bottom, Web: render at top
       if (isMobile) {
         return (
-          <nav className="sticky bottom-0 z-10 mt-auto border-t border-slate-200 bg-white px-4 py-3">
+          <nav className="sticky bottom-0 z-10 border-t border-slate-200 bg-white px-4 py-3">
             <div className="flex items-center justify-around gap-2">
               {elements.map((element, idx) => (
                 <ElementRenderer key={idx} element={element} />

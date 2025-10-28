@@ -13,14 +13,14 @@ import Footer from '@/components/Footer'
 
 const examplePrompts = [
   // Mobile
-  "Mobile banking app home screen",
+  "Mobile todo app",
   "Mobile chat app interface",
   "Mobile e-commerce product page",
 
   // Web
-  "Web dashboard with charts and sidebar",
-  "Web project management board",
-  "Web analytics dashboard for marketing",
+  "Web dashboard with statistics and sidebar with page links",
+  "Web project management board with tasks and kanban board",
+  "Web analytics dashboard for marketing with charts and graphs",
 ];
 
 export default function Landing() {
