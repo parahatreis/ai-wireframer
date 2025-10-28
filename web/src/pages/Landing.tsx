@@ -10,6 +10,8 @@ import { Clover } from 'lucide-react'
 import FeaturesSection from '@/components/FeaturesSection'
 import GetStartedSection from '@/components/GetStartedSection'
 import Footer from '@/components/Footer'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { SignIn, SignUp } from '@clerk/clerk-react'
 
 const examplePrompts = [
   // Mobile
@@ -25,6 +27,8 @@ const examplePrompts = [
 
 export default function Landing() {
   const [prompt, setPrompt] = useState('')
+  const [showSignIn, setShowSignIn] = useState(false)
+  const [showSignUp, setShowSignUp] = useState(false)
   const navigate = useNavigate()
 
   const handleGenerate = () => {
@@ -66,9 +70,14 @@ export default function Landing() {
           <Link to="/" className="flex items-center gap-2 text-xl font-semibold text-white h-[50px] pt-3">
             <img src={logo} alt="Logo" className="h-full" />
           </Link>
-          <Link to="/login">
-            <Button variant="outline" size="default">Sign In</Button>
-          </Link>
+          <div className="flex gap-3">
+            <Button variant="outline" size="default" onClick={() => setShowSignIn(true)}>
+              Sign In
+            </Button>
+            <Button variant="default" size="default" onClick={() => setShowSignUp(true)}>
+              Sign Up
+            </Button>
+          </div>
         </div>
       </motion.header>
 
@@ -150,6 +159,42 @@ export default function Landing() {
         <GetStartedSection />
       </main>
       <Footer />
+
+      {/* Sign In Modal */}
+      <Dialog open={showSignIn} onOpenChange={setShowSignIn}>
+        <DialogContent className="sm:max-w-md">
+          <SignIn 
+            routing="virtual"
+            signUpUrl="#"
+            afterSignInUrl="/account"
+            appearance={{ 
+              elements: { 
+                card: 'shadow-none border-none',
+                rootBox: 'w-full'
+              } 
+            }}
+            signUpForceRedirectUrl="#"
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Sign Up Modal */}
+      <Dialog open={showSignUp} onOpenChange={setShowSignUp}>
+        <DialogContent className="sm:max-w-md">
+          <SignUp 
+            routing="virtual"
+            signInUrl="#"
+            afterSignUpUrl="/account"
+            appearance={{ 
+              elements: { 
+                card: 'shadow-none border-none',
+                rootBox: 'w-full'
+              } 
+            }}
+            signInForceRedirectUrl="#"
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
