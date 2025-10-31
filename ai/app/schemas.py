@@ -1,25 +1,17 @@
-from typing import Optional, List, Dict, Any
-from pydantic import BaseModel, Field
+from typing import List, Optional, Dict, Any
+from pydantic import BaseModel
 
 
-class GenerateRequest(BaseModel):
+class HtmlDesignRequest(BaseModel):
   prompt: str
-  platform: str | None = "web"
-  viewport_w: int | None = 1440
-  viewport_h: int | None = 1024
-  messages: Optional[List[Dict[str, Any]]] = None  # Conversation history
+  num_variations: int = 3
+  platform: Optional[str] = None  # 'mobile' or 'web', auto-detected if None
+  conversation_history: Optional[List[Dict[str, Any]]] = None  # For iterations
 
 
-class WireframeMeta(BaseModel):
-  title: str | None = None
-  description: str | None = None
-  platform: str | None = None
-  viewport: str | None = None
-  planned: str | None = None
-
-
-class WireframeResponse(BaseModel):
-  meta: WireframeMeta = Field(default_factory=WireframeMeta)
-  pages: list = Field(default_factory=list)
-  conversation: Optional[List[Dict[str, Any]]] = None  # Full conversation including tool calls
+class HtmlDesignResponse(BaseModel):
+  designs: List[str]  # List of HTML strings
+  count: int
+  platform: str  # Detected or provided platform
+  conversation: List[Dict[str, Any]]  # Full conversation including current exchange
 

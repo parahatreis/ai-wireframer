@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import Chat from '@/components/Chat'
-import CanvasRenderer from '@/components/CanvasRenderer'
-import Toolbar from '@/components/Toolbar'
-import { generateWireframe } from '@/services/api'
-import type { WireframeResponse, ConversationMessage } from '@/types/wireframe'
+import HtmlDesignViewer from '@/components/HtmlDesignViewer'
+import { generateHtmlDesigns, type ConversationMessage } from '@/services/api'
 import { Button } from '@/theme/components/button'
+
+type ViewportType = 'desktop' | 'tablet' | 'mobile'
 
 export default function File() {
   const { id } = useParams()
@@ -13,43 +13,37 @@ export default function File() {
   const initialPrompt = searchParams.get('prompt') || ''
 
   const [isGenerating, setIsGenerating] = useState(false)
-  const [hasResult, setHasResult] = useState(true)
-  const [wireframeData, setWireframeData] = useState<WireframeResponse | null>(null)
+  const [htmlDesigns, setHtmlDesigns] = useState<string[]>([])
   const [error, setError] = useState<string | null>(null)
   const [conversationHistory, setConversationHistory] = useState<ConversationMessage[]>([])
+  const [detectedPlatform, setDetectedPlatform] = useState<'mobile' | 'web'>('web')
+  const [autoViewport, setAutoViewport] = useState<ViewportType>('desktop')
   const hasGeneratedRef = useRef(false)
-  const [canvasUpdateKey, setCanvasUpdateKey] = useState(0)
 
   const handleGeneration = useCallback(async (prompt: string) => {
     setIsGenerating(true)
     setError(null)
 
     try {
-      // Send conversation history with the request
-      const result = await generateWireframe({ 
+      const result = await generateHtmlDesigns({ 
         prompt,
-        messages: conversationHistory.length > 0 ? conversationHistory : undefined
+        num_variations: 3,
+        conversation_history: conversationHistory.length > 0 ? conversationHistory : undefined
       })
       
-      console.log('Generation result received:', {
-        hasPages: !!result.pages?.length,
-        pagesCount: result.pages?.length || 0,
-        hasConversation: !!result.conversation,
-        conversationLength: result.conversation?.length || 0,
-      })
+      console.log('HTML designs generated:', result.count, 'Platform:', result.platform)
+      setHtmlDesigns(result.designs)
+      setDetectedPlatform(result.platform)
+      setConversationHistory(result.conversation)
       
-      setWireframeData(result)
-      setHasResult(true)
-      
-      // Update conversation history from response
-      if (result.conversation) {
-        console.log('Updating conversation history with', result.conversation.length, 'messages')
-        setConversationHistory(result.conversation)
+      // Auto-select viewport based on platform
+      if (result.platform === 'mobile') {
+        setAutoViewport('mobile')
       } else {
-        console.log('No conversation in response - tool calling may have failed')
+        setAutoViewport('desktop')
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to generate wireframe')
+      setError(err instanceof Error ? err.message : 'Failed to generate HTML designs')
       console.error('Generation error:', err)
     } finally {
       setIsGenerating(false)
@@ -68,23 +62,16 @@ export default function File() {
     handleGeneration(message)
   }
 
-  // Auto-refresh canvas indicator when wireframe data changes
-  useEffect(() => {
-    if (wireframeData) {
-      setCanvasUpdateKey(prev => prev + 1)
-    }
-  }, [wireframeData])
-
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       <Chat
         initialPrompt={initialPrompt}
         onMessageSend={handleMessageSend}
         isGenerating={isGenerating}
-        plannedMessage={wireframeData?.meta?.planned ? { id: wireframeData.meta.title || 'latest', content: wireframeData.meta.planned } : null}
+        conversationHistory={conversationHistory}
+        detectedPlatform={detectedPlatform}
       />
       <div className="flex flex-1 flex-col justify-end min-h-0">
-        <Toolbar />
         <div className="flex-1 overflow-hidden min-h-0">
           {error ? (
             <div className="flex h-full items-center justify-center p-8">
@@ -102,11 +89,10 @@ export default function File() {
               </div>
             </div>
           ) : (
-            <CanvasRenderer
-              key={canvasUpdateKey}
+            <HtmlDesignViewer
+              designs={htmlDesigns}
               isGenerating={isGenerating}
-              hasResult={hasResult}
-              wireframeData={wireframeData}
+              initialViewport={autoViewport}
             />
           )}
         </div>

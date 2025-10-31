@@ -1,64 +1,37 @@
-import type { WireframeResponse, ConversationMessage } from '@/types/wireframe'
-
 const AI_SERVICE_URL = 'http://localhost:5566'
 
-export interface GenerateRequest {
+export interface ConversationMessage {
+  role: 'user' | 'assistant'
+  content: string
+}
+
+export interface HtmlDesignRequest {
   prompt: string
-  platform?: string
-  viewport_w?: number
-  viewport_h?: number
-  messages?: ConversationMessage[]
+  num_variations?: number
+  platform?: 'mobile' | 'web'
+  conversation_history?: ConversationMessage[]
 }
 
-const WEB_KEYWORDS = [/web/i, /desktop/i, /dashboard/i, /landing\s?page/i, /website/i]
-const MOBILE_KEYWORDS = [/mobile/i, /app\b/i, /iphone/i, /android/i]
-
-const WEB_VIEWPORT = { w: 1440, h: 1024 }
-const MOBILE_VIEWPORT = { w: 390, h: 844 }
-
-function inferPlatform(prompt: string, provided?: string): 'web' | 'mobile' {
-  if (provided === 'web' || provided === 'mobile') return provided
-  if (prompt) {
-    const lower = prompt.toLowerCase()
-    if (MOBILE_KEYWORDS.some((re) => re.test(lower))) return 'mobile'
-    if (WEB_KEYWORDS.some((re) => re.test(lower))) return 'web'
-  }
-  return 'web'
+export interface HtmlDesignResponse {
+  designs: string[]
+  count: number
+  platform: 'mobile' | 'web'
+  conversation: ConversationMessage[]
 }
 
-function inferViewport(prompt: string, platform: 'web' | 'mobile', w?: number, h?: number): { w: number; h: number } {
-  if (w && h) return { w, h }
-  const re = /(\d{3,4})\s*[x×]\s*(\d{3,4})/i
-  const match = prompt.match(re)
-  if (match) {
-    return { w: Number(match[1]), h: Number(match[2]) }
-  }
-  return platform === 'mobile' ? MOBILE_VIEWPORT : WEB_VIEWPORT
-}
-
-export async function generateWireframe(request: GenerateRequest): Promise<WireframeResponse> {
+export async function generateHtmlDesigns(request: HtmlDesignRequest): Promise<HtmlDesignResponse> {
   try {
-    const platform = inferPlatform(request.prompt, request.platform)
-    const viewport = inferViewport(request.prompt, platform, request.viewport_w, request.viewport_h)
-
-    const requestBody: any = {
-      prompt: request.prompt,
-      platform,
-      viewport_w: viewport.w,
-      viewport_h: viewport.h,
-    }
-
-    // Include conversation history if provided
-    if (request.messages && request.messages.length > 0) {
-      requestBody.messages = request.messages
-    }
-
-    const response = await fetch(`${AI_SERVICE_URL}/generate`, {
+    const response = await fetch(`${AI_SERVICE_URL}/generate-html-design`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(requestBody),
+      body: JSON.stringify({
+        prompt: request.prompt,
+        num_variations: request.num_variations || 3,
+        platform: request.platform,
+        conversation_history: request.conversation_history,
+      }),
     })
 
     if (!response.ok) {
@@ -66,9 +39,9 @@ export async function generateWireframe(request: GenerateRequest): Promise<Wiref
     }
 
     const data = await response.json()
-    return data as WireframeResponse
+    return data as HtmlDesignResponse
   } catch (error) {
-    console.error('Failed to generate wireframe:', error)
+    console.error('Failed to generate HTML designs:', error)
     throw error
   }
 }
