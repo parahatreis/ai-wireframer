@@ -5,6 +5,11 @@ export interface ConversationMessage {
   content: string
 }
 
+export interface PageDesign {
+  name: string
+  html: string
+}
+
 export interface HtmlDesignRequest {
   prompt: string
   num_variations?: number
@@ -13,7 +18,7 @@ export interface HtmlDesignRequest {
 }
 
 export interface HtmlDesignResponse {
-  designs: string[]
+  pages: PageDesign[]
   count: number
   platform: 'mobile' | 'web'
   conversation: ConversationMessage[]

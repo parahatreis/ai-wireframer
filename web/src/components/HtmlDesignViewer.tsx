@@ -1,17 +1,20 @@
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react'
-import { ChevronLeft, ChevronRight, Download, ExternalLink, Monitor, Tablet, Smartphone, Sparkles } from 'lucide-react'
+import { Download, ZoomIn, ZoomOut, Sparkles } from 'lucide-react'
 import { Button } from '@/theme/components/button'
+import type { PageDesign } from '@/services/api'
 
 interface HtmlDesignViewerProps {
-  designs: string[]
+  pages: PageDesign[]
   isGenerating: boolean
-  initialViewport?: ViewportType
+  platform: 'mobile' | 'web'
 }
 
 const GRID_SIZE = 40
-const MIN_SCALE = 0.3
-const MAX_SCALE = 1.5
+const MIN_SCALE = 0.1
+const MAX_SCALE = 2
 const ZOOM_SENSITIVITY = 0.002
+const ZOOM_STEP = 0.1
+const FRAME_GAP = 200 // Gap between frames in pixels
 
 interface Transform {
   x: number
@@ -19,36 +22,19 @@ interface Transform {
   scale: number
 }
 
-type ViewportType = 'desktop' | 'tablet' | 'mobile'
-
-interface Viewport {
-  width: number
-  height: number
-  label: string
-  icon: typeof Monitor
+// Platform-specific viewport sizes
+const VIEWPORT_SIZES = {
+  mobile: { width: 375, height: 667 },
+  web: { width: 1440, height: 900 },
 }
 
-const VIEWPORTS: Record<ViewportType, Viewport> = {
-  desktop: { width: 1440, height: 900, label: 'Desktop', icon: Monitor },
-  tablet: { width: 768, height: 1024, label: 'Tablet', icon: Tablet },
-  mobile: { width: 375, height: 667, label: 'Mobile', icon: Smartphone },
-}
-
-export default function HtmlDesignViewer({ designs, isGenerating, initialViewport = 'desktop' }: HtmlDesignViewerProps) {
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [viewport, setViewport] = useState<ViewportType>(initialViewport)
+export default function HtmlDesignViewer({ pages, isGenerating, platform }: HtmlDesignViewerProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [transform, setTransform] = useState<Transform>({ x: 120, y: 120, scale: 0.7 })
+  const [transform, setTransform] = useState<Transform>({ x: 120, y: 120, scale: 0.5 })
   const isPanningRef = useRef(false)
   const lastPositionRef = useRef<{ x: number; y: number } | null>(null)
 
-  const currentDesign = designs[currentIndex] || ''
-  const currentViewport = VIEWPORTS[viewport]
-
-  // Update viewport when initialViewport changes (new generation with different platform)
-  useEffect(() => {
-    setViewport(initialViewport)
-  }, [initialViewport])
+  const viewport = VIEWPORT_SIZES[platform]
 
   const handleWheel = useCallback((event: WheelEvent) => {
     if (event.ctrlKey) {
@@ -136,28 +122,30 @@ export default function HtmlDesignViewer({ designs, isGenerating, initialViewpor
     }
   }, [transform])
 
-  const handlePrevious = () => {
-    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : designs.length - 1))
+  const handleZoomIn = () => {
+    setTransform((prev) => ({
+      ...prev,
+      scale: Math.min(MAX_SCALE, prev.scale + ZOOM_STEP),
+    }))
   }
 
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev < designs.length - 1 ? prev + 1 : 0))
+  const handleZoomOut = () => {
+    setTransform((prev) => ({
+      ...prev,
+      scale: Math.max(MIN_SCALE, prev.scale - ZOOM_STEP),
+    }))
   }
 
-  const handleDownload = () => {
-    const blob = new Blob([currentDesign], { type: 'text/html' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `design-${currentIndex + 1}.html`
-    a.click()
-    URL.revokeObjectURL(url)
-  }
-
-  const handleOpenInNewTab = () => {
-    const blob = new Blob([currentDesign], { type: 'text/html' })
-    const url = URL.createObjectURL(blob)
-    window.open(url, '_blank')
+  const handleDownloadAll = () => {
+    pages.forEach((page, index) => {
+      const blob = new Blob([page.html], { type: 'text/html' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${page.name.toLowerCase().replace(/\s+/g, '-')}.html`
+      a.click()
+      URL.revokeObjectURL(url)
+    })
   }
 
   if (isGenerating) {
@@ -183,7 +171,7 @@ export default function HtmlDesignViewer({ designs, isGenerating, initialViewpor
               </div>
               <div className="flex items-center gap-3 justify-center" style={{ animationDelay: '0.2s' }}>
                 <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                <span>Designing variations</span>
+                <span>Designing pages</span>
               </div>
               <div className="flex items-center gap-3 justify-center" style={{ animationDelay: '0.4s' }}>
                 <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0.4s' }}></div>
@@ -209,7 +197,7 @@ export default function HtmlDesignViewer({ designs, isGenerating, initialViewpor
     )
   }
 
-  if (!designs || designs.length === 0) {
+  if (!pages || pages.length === 0) {
     return (
       <div className="flex h-full items-center justify-center p-8">
         <div className="text-center">
@@ -225,61 +213,47 @@ export default function HtmlDesignViewer({ designs, isGenerating, initialViewpor
     <div className="flex h-full flex-col bg-muted/20">
       {/* Toolbar */}
       <div className="flex items-center justify-between border-b bg-background px-4 py-3">
-        <div className="flex items-center gap-3">          
-          {/* Viewport Selector */}
-          <div className="flex items-center gap-1 border-l pl-3">
-            {(Object.keys(VIEWPORTS) as ViewportType[]).map((key) => {
-              const vp = VIEWPORTS[key]
-              const Icon = vp.icon
-              return (
-                <Button
-                  key={key}
-                  variant={viewport === key ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewport(key)}
-                  className="gap-1.5"
-                  title={`${vp.label} (${vp.width}×${vp.height})`}
-                >
-                  <Icon className="h-4 w-4" />
-                  <span className="text-xs">{vp.label}</span>
-                </Button>
-              )
-            })}
-          </div>
+        <div className="flex items-center gap-3">
+          <span className="text-sm font-medium text-muted-foreground">
+            {pages.length} {pages.length === 1 ? 'Page' : 'Pages'} • {platform === 'mobile' ? 'Mobile' : 'Web'}
+          </span>
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Navigation */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handlePrevious}
-            disabled={designs.length <= 1}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleNext}
-            disabled={designs.length <= 1}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
+          {/* Zoom Controls */}
+          <div className="flex items-center gap-1 border-r pr-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleZoomOut}
+              disabled={transform.scale <= MIN_SCALE}
+              title="Zoom Out"
+            >
+              <ZoomOut className="h-4 w-4" />
+            </Button>
+            <span className="text-xs text-muted-foreground min-w-[45px] text-center">
+              {Math.round(transform.scale * 100)}%
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleZoomIn}
+              disabled={transform.scale >= MAX_SCALE}
+              title="Zoom In"
+            >
+              <ZoomIn className="h-4 w-4" />
+            </Button>
+          </div>
 
           {/* Actions */}
-          <Button variant="outline" size="sm" onClick={handleOpenInNewTab}>
-            <ExternalLink className="h-4 w-4 mr-1" />
-            Open
-          </Button>
-          <Button variant="outline" size="sm" onClick={handleDownload}>
+          <Button variant="outline" size="sm" onClick={handleDownloadAll}>
             <Download className="h-4 w-4 mr-1" />
-            Download
+            Download All
           </Button>
         </div>
       </div>
 
-      {/* Pan-Zoom Canvas */}
+      {/* Figma-Style Canvas with Multiple Frames */}
       <div
         ref={containerRef}
         className="relative flex-1 overflow-hidden cursor-grab active:cursor-grabbing"
@@ -304,20 +278,46 @@ export default function HtmlDesignViewer({ designs, isGenerating, initialViewpor
             transformOrigin: '0 0',
           }}
         >
-          <div 
-            className="rounded-lg border-2 border-border bg-white shadow-2xl overflow-hidden"
-            style={{ width: `${currentViewport.width}px`, height: `${currentViewport.height}px` }}
-          >
-            <iframe
-              srcDoc={currentDesign}
-              className="w-full h-full border-0"
-              title={`Design variation ${currentIndex + 1}`}
-              sandbox="allow-scripts allow-same-origin"
-            />
-          </div>
+          {/* Render all frames horizontally */}
+          {pages.map((page, index) => {
+            const xPos = index * (viewport.width + FRAME_GAP)
+            
+            return (
+              <div
+                key={index}
+                className="absolute"
+                style={{
+                  left: `${xPos}px`,
+                  top: 0,
+                }}
+              >
+                {/* Frame Label */}
+                <div className="mb-3 flex items-center gap-2">
+                  <span className="text-sm font-semibold text-accent-foreground bg-white px-3 py-1 rounded-md shadow-sm border border-border">
+                    {index + 1}. {page.name}
+                  </span>
+                  <span className="text-xs text-accent-foreground bg-white px-2 py-1 rounded border border-border">
+                    {viewport.width} × {viewport.height}
+                  </span>
+                </div>
+                
+                {/* Frame */}
+                <div 
+                  className="rounded-lg border-2 border-border bg-white shadow-2xl overflow-hidden"
+                  style={{ width: `${viewport.width}px`, height: `${viewport.height}px` }}
+                >
+                  <iframe
+                    srcDoc={page.html}
+                    className="w-full h-full border-0"
+                    title={page.name}
+                    sandbox="allow-scripts allow-same-origin"
+                  />
+                </div>
+              </div>
+            )
+          })}
         </div>
       </div>
     </div>
   )
 }
-

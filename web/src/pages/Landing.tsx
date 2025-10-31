@@ -16,12 +16,12 @@ import { SignIn, SignUp } from '@clerk/clerk-react'
 const examplePrompts = [
   // Mobile
   "Mobile todo app",
-  "Mobile chat app interface",
+  "Mobile chat app",
   "Mobile e-commerce product page",
 
   // Web
   "Web dashboard with statistics and sidebar with page links",
-  "Web project management board with tasks and kanban board",
+  "Web project management app",
   "Web analytics dashboard for marketing with charts and graphs",
 ];
 

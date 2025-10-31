@@ -2,10 +2,8 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import Chat from '@/components/Chat'
 import HtmlDesignViewer from '@/components/HtmlDesignViewer'
-import { generateHtmlDesigns, type ConversationMessage } from '@/services/api'
+import { generateHtmlDesigns, type ConversationMessage, type PageDesign } from '@/services/api'
 import { Button } from '@/theme/components/button'
-
-type ViewportType = 'desktop' | 'tablet' | 'mobile'
 
 export default function File() {
   const { id } = useParams()
@@ -13,11 +11,10 @@ export default function File() {
   const initialPrompt = searchParams.get('prompt') || ''
 
   const [isGenerating, setIsGenerating] = useState(false)
-  const [htmlDesigns, setHtmlDesigns] = useState<string[]>([])
+  const [pages, setPages] = useState<PageDesign[]>([])
   const [error, setError] = useState<string | null>(null)
   const [conversationHistory, setConversationHistory] = useState<ConversationMessage[]>([])
   const [detectedPlatform, setDetectedPlatform] = useState<'mobile' | 'web'>('web')
-  const [autoViewport, setAutoViewport] = useState<ViewportType>('desktop')
   const hasGeneratedRef = useRef(false)
 
   const handleGeneration = useCallback(async (prompt: string) => {
@@ -31,20 +28,16 @@ export default function File() {
         conversation_history: conversationHistory.length > 0 ? conversationHistory : undefined
       })
       
-      console.log('HTML designs generated:', result.count, 'Platform:', result.platform)
-      setHtmlDesigns(result.designs)
+      console.log('HTML pages generated:', result.count, 'Platform:', result.platform)
+      setPages(result.pages)
       setDetectedPlatform(result.platform)
       setConversationHistory(result.conversation)
-      
-      // Auto-select viewport based on platform
-      if (result.platform === 'mobile') {
-        setAutoViewport('mobile')
-      } else {
-        setAutoViewport('desktop')
-      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate HTML designs')
       console.error('Generation error:', err)
+      
+      // Remove the optimistic message on error
+      setConversationHistory(prev => prev.slice(0, -1))
     } finally {
       setIsGenerating(false)
     }
@@ -53,11 +46,16 @@ export default function File() {
   useEffect(() => {
     if (initialPrompt && !hasGeneratedRef.current) {
       hasGeneratedRef.current = true
+      // Add initial prompt to conversation history
+      setConversationHistory([{ role: 'user', content: initialPrompt }])
       handleGeneration(initialPrompt)
     }
   }, [initialPrompt, handleGeneration])
 
   const handleMessageSend = (message: string) => {
+    // Add user message optimistically to conversation history
+    setConversationHistory(prev => [...prev, { role: 'user', content: message }])
+    
     window.history.replaceState({}, '', `/file/${id}?prompt=${encodeURIComponent(message)}`)
     handleGeneration(message)
   }
@@ -90,9 +88,9 @@ export default function File() {
             </div>
           ) : (
             <HtmlDesignViewer
-              designs={htmlDesigns}
+              pages={pages}
               isGenerating={isGenerating}
-              initialViewport={autoViewport}
+              platform={detectedPlatform}
             />
           )}
         </div>

@@ -9,8 +9,13 @@ class HtmlDesignRequest(BaseModel):
   conversation_history: Optional[List[Dict[str, Any]]] = None  # For iterations
 
 
+class PageDesign(BaseModel):
+  name: str  # "Home", "Detail", "Settings", etc.
+  html: str  # Complete HTML for this page
+
+
 class HtmlDesignResponse(BaseModel):
-  designs: List[str]  # List of HTML strings
+  pages: List[PageDesign]  # List of page designs
   count: int
   platform: str  # Detected or provided platform
   conversation: List[Dict[str, Any]]  # Full conversation including current exchange

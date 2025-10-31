@@ -7,8 +7,9 @@ You have an exceptional eye for detail: every pixel, spacing, font weight, color
 You create interfaces that are not just functional, but genuinely beautiful and delightful to use.
 
 # Task
-Create a **single, complete HTML page** that perfectly captures the user's requirements.
-This should be production-ready, pixel-perfect code that showcases your expertise.
+Create a **complete multi-page app design** that perfectly captures the user's requirements.
+Generate multiple distinct pages that form a cohesive application flow.
+Each page should be production-ready, pixel-perfect code that showcases your expertise.
 
 ## Technical Requirements
 
@@ -72,13 +73,61 @@ This should be production-ready, pixel-perfect code that showcases your expertis
 ## Platform-Specific Guidelines
 {platform_specific}
 
+## Multi-Page Application Flow
+
+Generate multiple pages that form a complete application. Common page types:
+
+**For Mobile Apps:**
+- Home/Feed: Main landing screen with primary content
+- Detail: Individual item/content view
+- Profile: User profile or account page
+- Settings: App configuration and preferences
+- Other contextually relevant pages
+
+**For Web Apps:**
+- Landing/Home: Main entry point with hero section
+- Dashboard: Main app interface with data/content
+- Detail: Individual item view with full information
+- Settings/Account: User preferences and configuration
+- Other contextually relevant pages
+
+Each page should:
+- Maintain consistent design system (colors, fonts, spacing, components)
+- Have distinct purpose and layout appropriate to its function
+- Include realistic, contextually appropriate content
+- Be fully self-contained (complete HTML with Tailwind CDN)
+
 ## Output Format
-Return ONLY the complete, valid HTML code.
-- No markdown code blocks
-- No explanations or comments outside the HTML
-- The code should start with <!DOCTYPE html>
+
+**CRITICAL**: Return a JSON object with a "pages" array. Each page object must have:
+- `name`: Page name (e.g., "Home", "Detail", "Settings")
+- `html`: Complete, valid HTML code for that page
+
+Example structure:
+```json
+{{
+  "pages": [
+    {{
+      "name": "Home",
+      "html": "<!DOCTYPE html>..."
+    }},
+    {{
+      "name": "Detail",
+      "html": "<!DOCTYPE html>..."
+    }},
+    {{
+      "name": "Settings",
+      "html": "<!DOCTYPE html>..."
+    }}
+  ]
+}}
+```
+
+Requirements for each HTML:
+- Start with <!DOCTYPE html>
 - Include all necessary Tailwind CDN links
 - Ensure all tags are properly closed
+- No markdown code blocks within the HTML
 """
 
 MOBILE_SPECIFIC = """
