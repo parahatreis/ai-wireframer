@@ -1,118 +1,77 @@
-import type { WireframeMeta, WireframeResponse } from '@/types/wireframe'
+import type { GenerateResponse } from '@/types/wireframe'
 import { PanZoomWorkspace } from './workspace/PanZoomWorkspace'
-import { validateWireframe, isValidWireframe } from '@/utils/wireframeValidator'
+import { ThemeProvider } from './ThemeProvider'
 
 interface WireframeRendererProps {
-  data?: WireframeResponse | null
+  data?: GenerateResponse | null
 }
 
-// Canvas rendering sizes for different platforms
+// Canvas rendering sizes
 const WEB_CANVAS_WIDTH = 1200
 const MOBILE_CANVAS_WIDTH = 375
-const MIN_BOARD_HEIGHT = 400
+const MIN_BOARD_HEIGHT = 800
 
-// Standard viewport aspect ratios
-const STANDARD_VIEWPORTS = {
-  mobile: { width: 390, height: 844 }, // iPhone 12/13/14
-  web: { width: 1440, height: 900 }, // Common desktop
-}
-
-function parseViewport(meta: WireframeMeta): { width: number; height: number } {
-  const platforms = meta.platforms || [meta.platform]
-  const isMobile = platforms?.includes('mobile')
-  const fallback = isMobile ? STANDARD_VIEWPORTS.mobile : STANDARD_VIEWPORTS.web
-
-  if (!meta.viewport) {
-    return fallback
-  }
-
-  const match = meta.viewport.match(/(\d{2,4})\s*[x×]\s*(\d{2,4})/i)
-  if (!match) {
-    return fallback
-  }
-
-  const width = Number(match[1]) || fallback.width
-  const height = Number(match[2]) || fallback.height
-
-  if (width <= 0 || height <= 0) {
-    return fallback
-  }
-
-  return { width, height }
-}
-
+/**
+ * WireframeRenderer: Main renderer for NEW_FLOW UI specs
+ * Wraps pages in ThemeProvider and renders with PanZoomWorkspace
+ */
 export default function WireframeRenderer({ data }: WireframeRendererProps) {
-  if (!data) {
+  if (!data || !data.spec) {
     return (
-      <div className="flex h-full items-center justify-center text-muted-foreground">
+      <div className="flex h-full items-center justify-center text-gray-500">
         No data to render
       </div>
     )
   }
 
-  // Validate and normalize data
-  if (!isValidWireframe(data)) {
-    console.error('Invalid wireframe data:', data)
+  const { spec } = data
+  
+  // Validate spec structure
+  if (!spec.pages || spec.pages.length === 0) {
     return (
-      <div className="flex h-full items-center justify-center text-red-500">
-        Invalid wireframe data structure
-      </div>
-    )
-  }
-
-  const validatedData = validateWireframe(data)
-
-  if (!validatedData.pages || validatedData.pages.length === 0) {
-    return (
-      <div className="flex h-full items-center justify-center text-muted-foreground">
+      <div className="flex h-full items-center justify-center text-gray-500">
         No pages to render
       </div>
     )
   }
 
-  const viewport = parseViewport(validatedData.meta)
-  const platforms = validatedData.meta.platforms || [validatedData.meta.platform]
-  const platform = platforms?.includes('mobile') ? 'mobile' : 'web'
+  const platform = (spec.meta.platform || 'web') as 'web' | 'mobile'
   
-  // Calculate canvas size based on viewport aspect ratio
-  const viewportAspectRatio = viewport.height / viewport.width
-  const canvasWidth = platform === 'mobile' ? MOBILE_CANVAS_WIDTH : WEB_CANVAS_WIDTH
-  const canvasHeight = Math.max(
-    Math.round(canvasWidth * viewportAspectRatio),
-    MIN_BOARD_HEIGHT
-  )
-  
-  // Board dimensions
-  const boardWidth = canvasWidth
-  const boardHeight = canvasHeight
-  const columnSpacing = boardWidth + 120
-  const rowSpacing = boardHeight + 160
-
-  const pages = validatedData.pages.map((page, index) => {
-    // Flatten sections into elements for backward compatibility
-    const elements = page.sections?.flatMap(section => section.elements) || []
+  // Map spec pages to workspace pages format
+  const pages = spec.pages.map((page, index) => {
+    const canvasWidth = platform === 'mobile' ? MOBILE_CANVAS_WIDTH : WEB_CANVAS_WIDTH
+    const canvasHeight = MIN_BOARD_HEIGHT
+    console.log('page', page)
+    const meta = page.meta ?? {}
+    const pageTitle = meta.title || `Page ${index + 1}`
+    const pageDescription = meta.description || ''
     
     return {
       id: `page-${index}`,
-      name: page.name || `Page ${index + 1}`,
-      description: page.purpose,
+      name: pageTitle,
+      description: pageDescription,
+      route: page.route,
       sections: page.sections,
-      elements,
-      platform: platform as 'mobile' | 'web', // Pass platform info to pages
-      x: (index % 2) * columnSpacing,
-      y: Math.floor(index / 2) * rowSpacing,
-      w: boardWidth,
-      h: boardHeight,
+      platform: platform,
+      x: (index % 2) * (canvasWidth + 120), // Horizontal spacing
+      y: Math.floor(index / 2) * (canvasHeight + 160), // Vertical spacing
+      w: canvasWidth,
+      h: canvasHeight,
     }
   })
 
   return (
-    <div className="h-full min-h-[720px]">
-      <PanZoomWorkspace
-        pages={pages}
-        initialTransform={{ x: 160, y: 160, scale: platform === 'mobile' ? 1 : 0.5 }}
-      />
-    </div>
+    <ThemeProvider theme={spec.theme}>
+      <div className="h-full min-h-[720px]">
+        <PanZoomWorkspace
+          pages={pages}
+          initialTransform={{
+            x: 160,
+            y: 160,
+            scale: platform === 'mobile' ? 1 : 0.5,
+          }}
+        />
+      </div>
+    </ThemeProvider>
   )
 }
-

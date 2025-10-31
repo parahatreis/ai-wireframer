@@ -1,12 +1,12 @@
 import { Skeleton } from '@/theme/components/skeleton'
 import { cn } from '@/lib/utils'
 import WireframeRenderer from './WireframeRenderer'
-import type { WireframeResponse } from '@/types/wireframe'
+import type { GenerateResponse } from '@/types/wireframe'
 
 interface CanvasRendererProps {
   isGenerating: boolean
   hasResult: boolean
-  wireframeData?: WireframeResponse | null
+  wireframeData?: GenerateResponse | null
 }
 
 export default function CanvasRenderer({ isGenerating, hasResult, wireframeData }: CanvasRendererProps) {

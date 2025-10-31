@@ -10,7 +10,8 @@ services:
     environment:
       - PORT=${PORT:-5566}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - AI_MODEL=${AI_MODEL:-gpt-4o-mini}
+      - AI_MODEL_PRO=${AI_MODEL_PRO}
+      - AI_MODEL_LITE=${AI_MODEL_LITE}
       - SENTRY_DSN=${SENTRY_DSN:-}
     volumes:
       - ./app:/app/app

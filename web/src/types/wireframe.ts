@@ -1,150 +1,159 @@
-export interface WireframeElement {
-  type: string
-  content?: {
-    text?: string
-    media?: {
-      src?: string
-      alt?: string
-    }
-  }
-  props?: {
-    variant?: string
-    size?: string
-    icon?: string
-    align?: string
-    state?: string
-    asShadcn?: string
-  }
-  styles?: {
-    padding?: string
-    margin?: string
-    gap?: string
-    border?: string
-    borderRadius?: string
-    background?: string
-    color?: string
-    tw?: string
-  }
-  attributes?: {
-    id?: string
-    className?: string
-    href?: string
-    src?: string
-    alt?: string
-    type?: string
-    placeholder?: string
-    ariaLabel?: string
-    dataTestId?: string
-  }
-  bindings?: {
-    data?: string
-    format?: string
-    validation?: {
-      required?: boolean
-      pattern?: string
-    }
-  }
-  interactions?: Array<{
-    on: string
-    do: string
-  }>
-  motion?: {
-    transition?: string
-    hover?: string
-    press?: string
-    reduceMotionSafe?: boolean
-  }
-  elements?: WireframeElement[]
+// NEW_FLOW: Updated types to match AI service spec format
+
+// ============================================================================
+// CORE SPEC STRUCTURE
+// ============================================================================
+
+export interface GenerateResponse {
+  spec: UISpec
+  meta: GenerationMeta
 }
 
-export interface WireframeSection {
+export interface UISpec {
+  version: string
+  meta: UISpecMeta
+  theme: Theme
+  pages: Page[]
+  states?: Record<string, any>
+}
+
+export interface UISpecMeta {
+  title: string
+  description?: string
+  app_type?: string
+  platform?: string
+}
+
+// ============================================================================
+// THEME
+// ============================================================================
+
+export interface Theme {
+  palette_name: string
+  type_scale_name: string
+  spacing_scale_name: string
+  colors: ThemeColors
+  typography: Typography
+  spacing: Spacing
+  radius: number
+  shadows: number
+}
+
+export interface ThemeColors {
+  primary: string
+  secondary: string
+  accent: string
+  background: string
+  foreground: string
+  muted: string
+  border: string
+}
+
+export interface Typography {
+  base_size: number
+  scale_ratio: number
+  h1: number
+  h2: number
+  h3: number
+  body: number
+  small: number
+}
+
+export interface Spacing {
+  scale: number[]
+  unit: number
+}
+
+// ============================================================================
+// PAGE STRUCTURE
+// ============================================================================
+
+export interface Page {
+  route: string
+  meta: PageMeta
+  sections: Section[]
+}
+
+export interface PageMeta {
+  title: string
+  description?: string
+  icon?: string
+}
+
+// ============================================================================
+// SECTION STRUCTURE (NO nested elements)
+// ============================================================================
+
+export type SectionKind = 'nav' | 'hero' | 'grid' | 'card' | 'list' | 'form' | 'table' | 'footer' | 'modal'
+
+export interface Section {
   id: string
-  role: 'header' | 'hero' | 'content' | 'sidebar' | 'footer' | 'modal' | 'sheet'
-  elements: WireframeElement[]
-}
-
-export interface WireframePage {
-  name: string
-  purpose?: string
-  route?: string
-  a11y?: {
-    contrast?: string
-    focusVisible?: boolean
-    touchTargetMin?: number
-  }
-  layout?: {
-    type?: string
-    columns?: number
-    gutter?: number
-    maxWidth?: number
-    stickyHeader?: boolean
-    stickyFooter?: boolean
-  }
-  states?: string[]
-  sections: WireframeSection[]
-}
-
-export interface WireframeMeta {
+  kind: SectionKind
   title?: string
   description?: string
-  platforms?: string[]
-  platform?: string
-  viewport?: string
-  mood?: string
-  primaryCta?: string
-  brand?: {
-    name?: string
-    logoAlt?: string
-  }
-  rendererHints?: {
-    framework?: string
-    uiKit?: string
-    classStrategy?: string
-  }
-  notes?: string
-  planned?: string // Legacy field for backward compatibility
+  content?: Record<string, any>
+  
+  // Kind-specific fields
+  grid?: GridConfig
+  fields?: FormField[]
+  columns?: TableColumn[]
+  states?: SectionState
 }
 
-export interface WireframeGrid {
-  breakpoints?: {
-    sm?: number
-    md?: number
-    lg?: number
-    xl?: number
-  }
-  columns?: {
-    sm?: number
-    md?: number
-    lg?: number
-  }
-  gutter?: number
-  maxWidth?: number
+export interface GridConfig {
+  cols: number
+  gap: number
+  sm_cols: number
+  md_cols: number
+  lg_cols: number
 }
 
-export interface ToolCall {
-  id: string
-  type: 'function'
-  function: {
-    name: string
-    arguments: string
-  }
+export interface FormField {
+  name: string
+  label: string
+  type: string
+  placeholder?: string
+  required?: boolean
+  validation?: string
+  helper_text?: string
 }
 
-export interface ConversationMessage {
-  role: 'user' | 'assistant' | 'tool' | 'system'
-  content?: string
-  tool_calls?: ToolCall[]
-  tool_call_id?: string
-  name?: string
+export interface TableColumn {
+  key: string
+  label: string
+  type: string
+  sortable?: boolean
+  width?: string
 }
 
+export interface SectionState {
+  has_empty?: boolean
+  has_loading?: boolean
+  has_error?: boolean
+}
+
+// ============================================================================
+// GENERATION METADATA
+// ============================================================================
+
+export interface GenerationMeta {
+  schema_version: string
+  seed: number
+  palette_name: string
+  type_scale_name: string
+  spacing_scale_name: string
+  linter_score: number
+  passes: Record<string, any>
+  timestamp: string
+  app_type?: string
+}
+
+// ============================================================================
+// LEGACY TYPES (for backward compatibility during transition)
+// ============================================================================
+
+// Keep minimal old types for any remaining references
 export interface WireframeResponse {
-  meta: WireframeMeta
-  grid?: WireframeGrid
-  library?: {
-    components?: string[]
-  }
-  pages: WireframePage[]
-  conversation?: ConversationMessage[]
+  meta: any
+  pages: any[]
 }
-

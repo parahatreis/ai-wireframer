@@ -1,162 +1,68 @@
-import type { WireframeResponse, WireframeElement } from '@/types/wireframe'
+import type { GenerateResponse } from '@/types/wireframe'
 
 /**
- * Validates and normalizes wireframe data to ensure stable rendering
+ * Validates UI Spec format from NEW_FLOW AI service
  */
-export function validateWireframe(data: WireframeResponse): WireframeResponse {
-  // Ensure meta exists
-  if (!data.meta) {
-    data.meta = {
-      title: 'Untitled',
-      platform: 'web',
-    }
+export function isValidUISpec(data: any): boolean {
+  return !!(
+    data &&
+    data.spec &&
+    data.spec.version &&
+    data.spec.theme &&
+    data.spec.pages &&
+    Array.isArray(data.spec.pages)
+  )
+}
+
+/**
+ * Validates and normalizes GenerateResponse
+ * Ensures all required fields are present
+ */
+export function validateGenerateResponse(data: any): GenerateResponse {
+  if (!isValidUISpec(data)) {
+    throw new Error('Invalid UI Spec format: missing required fields')
   }
 
-  // Ensure pages exist
-  if (!data.pages || data.pages.length === 0) {
-    console.warn('No pages found in wireframe data')
+  const response = data as GenerateResponse
+
+  // Validate theme structure
+  if (!response.spec.theme.colors || !response.spec.theme.typography) {
+    throw new Error('Invalid theme structure: missing colors or typography')
+  }
+
+  // Validate pages
+  if (response.spec.pages.length === 0) {
+    throw new Error('Invalid spec: no pages defined')
+  }
+
+  // Validate each page has required fields
+  response.spec.pages.forEach((page, idx) => {
+    if (!page.route || !page.meta || !page.sections) {
+      throw new Error(`Invalid page ${idx}: missing route, meta, or sections`)
+    }
+  })
+
+  return response
+}
+
+/**
+ * Validates wireframe data (legacy format support)
+ * @deprecated Use validateGenerateResponse instead
+ */
+export function validateWireframe(data: any): any {
+  if (!data) {
+    throw new Error('No wireframe data provided')
+  }
+
+  // Try new format first
+  if (isValidUISpec(data)) {
+    return validateGenerateResponse(data)
+  }
+
+  // Legacy format validation (if needed)
+  if (data.pages && Array.isArray(data.pages)) {
     return data
   }
 
-  // Validate each page
-  data.pages = data.pages.map((page) => {
-    // Ensure sections exist
-    if (!page.sections || page.sections.length === 0) {
-      console.warn(`Page "${page.name}" has no sections`)
-      page.sections = []
-    }
-
-    // Validate each section
-    page.sections = page.sections.map((section) => {
-      // Ensure elements array exists
-      if (!section.elements) {
-        section.elements = []
-      }
-
-      // Normalize elements
-      section.elements = section.elements.map(normalizeElement)
-
-      return section
-    })
-
-    return page
-  })
-
-  return data
+  throw new Error('Invalid wireframe format')
 }
-
-/**
- * Normalizes a single element to ensure all required fields exist
- */
-function normalizeElement(element: WireframeElement): WireframeElement {
-  // Ensure basic fields exist
-  if (!element.type) {
-    console.warn('Element missing type, defaulting to "container"')
-    element.type = 'container'
-  }
-
-  // Normalize content
-  if (!element.content) {
-    element.content = {}
-  }
-
-  // If content is a string (old format), convert to new format
-  if (typeof element.content === 'string') {
-    element.content = { text: element.content }
-  }
-
-  // Ensure props exists
-  if (!element.props) {
-    element.props = {}
-  }
-
-  // Ensure styles exists
-  if (!element.styles) {
-    element.styles = {}
-  }
-
-  // Ensure attributes exists
-  if (!element.attributes) {
-    element.attributes = {}
-  }
-
-  // Ensure bindings exists
-  if (!element.bindings) {
-    element.bindings = {}
-  }
-
-  // Ensure interactions exists
-  if (!element.interactions) {
-    element.interactions = []
-  }
-
-  // Ensure motion exists
-  if (!element.motion) {
-    element.motion = {}
-  }
-
-  // Ensure elements array exists
-  if (!element.elements) {
-    element.elements = []
-  }
-
-  // Recursively normalize child elements
-  if (element.elements && element.elements.length > 0) {
-    element.elements = element.elements.map(normalizeElement)
-  }
-
-  return element
-}
-
-/**
- * Checks if wireframe data is valid
- */
-export function isValidWireframe(data: unknown): data is WireframeResponse {
-  if (!data || typeof data !== 'object') {
-    return false
-  }
-
-  const wireframe = data as WireframeResponse
-
-  // Check for required fields
-  if (!wireframe.meta || !wireframe.pages) {
-    return false
-  }
-
-  // Check if pages is an array
-  if (!Array.isArray(wireframe.pages)) {
-    return false
-  }
-
-  return true
-}
-
-/**
- * Logs validation warnings for debugging
- */
-export function logValidationIssues(data: WireframeResponse): void {
-  if (!data.pages || data.pages.length === 0) {
-    console.warn('⚠️ No pages in wireframe')
-    return
-  }
-
-  data.pages.forEach((page, pageIdx) => {
-    if (!page.sections || page.sections.length === 0) {
-      console.warn(`⚠️ Page ${pageIdx} "${page.name}" has no sections`)
-      return
-    }
-
-    page.sections.forEach((section, sectionIdx) => {
-      if (!section.elements || section.elements.length === 0) {
-        console.warn(`⚠️ Page ${pageIdx} section ${sectionIdx} has no elements`)
-      }
-
-      section.elements?.forEach((element, elementIdx) => {
-        if (!element.type) {
-          console.warn(`⚠️ Page ${pageIdx} section ${sectionIdx} element ${elementIdx} has no type`)
-        }
-      })
-    })
-  })
-}
-

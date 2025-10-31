@@ -60,7 +60,8 @@ services:
       dockerfile: Dockerfile.dev
     environment:
       OPENAI_API_KEY:
-      AI_MODEL: gpt-4o-mini
+      AI_MODEL_PRO: ${AI_MODEL_PRO:-gpt-4o}
+      AI_MODEL_LITE: ${AI_MODEL_LITE:-gpt-4o-mini}
       SENTRY_DSN:
     ports: ["5566:5566"]
     depends_on: [db]
@@ -74,7 +75,8 @@ services:
       dockerfile: Dockerfile
     environment:
       OPENAI_API_KEY:
-      AI_MODEL: gpt-4o-mini
+      AI_MODEL_PRO: ${AI_MODEL_PRO:-gpt-4o}
+      AI_MODEL_LITE: ${AI_MODEL_LITE:-gpt-4o-mini}
     ports: ["5566:5566"]
     depends_on: [db]
     profiles: ["prod"]

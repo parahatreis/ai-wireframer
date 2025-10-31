@@ -1,5 +1,5 @@
-import { ElementRenderer } from '../ElementRenderer'
-import { SectionRenderer } from '../SectionRenderer'
+import { SectionKindRenderer } from '../renderers'
+import { useTheme } from '../ThemeProvider'
 import type { WorkspacePage } from './types'
 
 interface PageBoardProps {
@@ -7,8 +7,14 @@ interface PageBoardProps {
   platform?: 'mobile' | 'web'
 }
 
+/**
+ * PageBoard: Renders a single page with its sections
+ * Uses NEW_FLOW section kind-based rendering
+ */
 export function PageBoard({ page, platform = 'web' }: PageBoardProps) {
+  const theme = useTheme()
   const hasSections = page.sections && page.sections.length > 0
+  const backgroundColor = theme.colors?.background ?? '#ffffff'
   
   return (
     <div>
@@ -27,27 +33,27 @@ export function PageBoard({ page, platform = 'web' }: PageBoardProps) {
         
         {/* Page content with fixed dimensions */}
         <div
-          className="relative flex flex-col overflow-auto rounded-lg border border-slate-200 bg-white shadow-lg"
+          className="relative flex flex-col overflow-auto rounded-lg border border-slate-200 shadow-lg"
           style={{
             width: page.w,
             height: page.h,
+            backgroundColor,
           }}
         >
           {hasSections ? (
-            // Render using sections (new schema)
+            // Render sections using new SectionKindRenderer
             page.sections!.map((section, idx) => (
-              <SectionRenderer 
-                key={section.id || idx} 
+              <SectionKindRenderer
+                key={section.id || idx}
                 section={section}
+                theme={theme}
                 platform={platform}
               />
             ))
           ) : (
-            // Fallback: render elements directly (backward compatibility)
-            <div className="space-y-4 p-6 text-slate-800">
-              {page.elements?.map((element, idx) => (
-                <ElementRenderer key={idx} element={element} />
-              ))}
+            // No sections: empty state
+            <div className="flex h-full items-center justify-center p-6 text-slate-400">
+              No sections to render
             </div>
           )}
         </div>

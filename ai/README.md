@@ -61,7 +61,8 @@ The service will be available at `http://localhost:5566` (or whatever PORT you s
 |----------|----------|---------|-------------|
 | `PORT` | No | `5566` | Port for the service |
 | `OPENAI_API_KEY` | Yes | - | OpenAI API key for LiteLLM |
-| `AI_MODEL` | No | `gpt-4o-mini` | AI model to use |
+| `AI_MODEL_PRO` | No | `gpt-4o` | AI model for heavy generations (Pass A, B, C) |
+| `AI_MODEL_LITE` | No | `gpt-4o-mini` | AI model for light operations (repairs, validation) |
 | `SENTRY_DSN` | No | - | Sentry DSN for error tracking |
 
 ## Stopping

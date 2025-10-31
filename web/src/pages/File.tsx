@@ -3,8 +3,8 @@ import { useParams, useSearchParams } from 'react-router-dom'
 import Chat from '@/components/Chat'
 import CanvasRenderer from '@/components/CanvasRenderer'
 import Toolbar from '@/components/Toolbar'
-import { generateWireframe } from '@/services/api'
-import type { WireframeResponse, ConversationMessage } from '@/types/wireframe'
+import { generateUISpec } from '@/services/api'
+import type { GenerateResponse } from '@/types/wireframe'
 import { Button } from '@/theme/components/button'
 
 export default function File() {
@@ -14,9 +14,8 @@ export default function File() {
 
   const [isGenerating, setIsGenerating] = useState(false)
   const [hasResult, setHasResult] = useState(true)
-  const [wireframeData, setWireframeData] = useState<WireframeResponse | null>(null)
+  const [wireframeData, setWireframeData] = useState<GenerateResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [conversationHistory, setConversationHistory] = useState<ConversationMessage[]>([])
   const hasGeneratedRef = useRef(false)
   const [canvasUpdateKey, setCanvasUpdateKey] = useState(0)
 
@@ -25,36 +24,31 @@ export default function File() {
     setError(null)
 
     try {
-      // Send conversation history with the request
-      const result = await generateWireframe({ 
+      // NEW_FLOW: Use generateUISpec instead of generateWireframe
+      const result = await generateUISpec({ 
         prompt,
-        messages: conversationHistory.length > 0 ? conversationHistory : undefined
+        options: {
+          n_candidates: 4, // Generate multiple themed candidates
+        }
       })
       
       console.log('Generation result received:', {
-        hasPages: !!result.pages?.length,
-        pagesCount: result.pages?.length || 0,
-        hasConversation: !!result.conversation,
-        conversationLength: result.conversation?.length || 0,
+        version: result.spec?.version,
+        hasPages: !!result.spec?.pages?.length,
+        pagesCount: result.spec?.pages?.length || 0,
+        theme: result.spec?.theme?.palette_name,
+        linterScore: result.meta?.linter_score,
       })
       
       setWireframeData(result)
       setHasResult(true)
-      
-      // Update conversation history from response
-      if (result.conversation) {
-        console.log('Updating conversation history with', result.conversation.length, 'messages')
-        setConversationHistory(result.conversation)
-      } else {
-        console.log('No conversation in response - tool calling may have failed')
-      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to generate wireframe')
+      setError(err instanceof Error ? err.message : 'Failed to generate UI spec')
       console.error('Generation error:', err)
     } finally {
       setIsGenerating(false)
     }
-  }, [conversationHistory])
+  }, [])
 
   useEffect(() => {
     if (initialPrompt && !hasGeneratedRef.current) {
@@ -81,7 +75,7 @@ export default function File() {
         initialPrompt={initialPrompt}
         onMessageSend={handleMessageSend}
         isGenerating={isGenerating}
-        plannedMessage={wireframeData?.meta?.planned ? { id: wireframeData.meta.title || 'latest', content: wireframeData.meta.planned } : null}
+        plannedMessage={null}
       />
       <div className="flex flex-1 flex-col justify-end min-h-0">
         <Toolbar />
