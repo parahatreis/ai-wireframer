@@ -44,9 +44,9 @@ yarn-error.log*
 docker-compose.override.yml
 
 # Misc
+superdesign-main/
 .cache/
 .pytest_cache/
 .coverage
 htmlcov/
 drizzle/
-

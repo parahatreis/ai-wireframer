@@ -16,12 +16,12 @@ import { SignIn, SignUp } from '@clerk/clerk-react'
 const examplePrompts = [
   // Mobile
   "Mobile todo app",
-  "Mobile chat app interface",
+  "Mobile chat app",
   "Mobile e-commerce product page",
 
   // Web
   "Web dashboard with statistics and sidebar with page links",
-  "Web project management board with tasks and kanban board",
+  "Web project management app",
   "Web analytics dashboard for marketing with charts and graphs",
 ];
 
@@ -91,7 +91,7 @@ export default function Landing() {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             Turn your ideas into <br />
-            <span className="text-primary-light">wireframes instantly.</span>
+            <span className="text-primary-light">designs instantly.</span>
           </motion.h1>
           <motion.p 
             className="mt-6 text-xl text-foreground max-w-2xl"
@@ -99,12 +99,12 @@ export default function Landing() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            Describe your app and let AI sketch it for you.
+            Generate pixel-perfect HTML designs with AI. Get 3 beautiful variations instantly.
           </motion.p>
 
           {/* Prompt Input */}
           <motion.div 
-            className="mt-16 flex w-full max-w-3xl gap-3"
+            className="mt-12 flex w-full max-w-3xl gap-3"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
