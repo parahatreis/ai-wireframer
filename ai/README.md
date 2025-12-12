@@ -28,7 +28,7 @@ app/
 ## Prerequisites
 
 - Docker & Docker Compose
-- OpenAI API key
+- OpenAI API key OR Google Gemini API key
 
 ## Setup
 
@@ -42,7 +42,9 @@ app/
    Edit `.env` and set required variables:
    ```
    PORT=5566
-   OPENAI_API_KEY=your_actual_key_here
+   OPENAI_API_KEY=your_openai_key_here  # For OpenAI models
+   GEMINI_API_KEY=your_gemini_key_here  # For Gemini models
+   AI_MODEL=gemini/gemini-1.5-flash     # Or gpt-4o, gpt-4o-mini, etc.
    ```
 
 ## Running
@@ -60,9 +62,16 @@ The service will be available at `http://localhost:5566` (or whatever PORT you s
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
 | `PORT` | No | `5566` | Port for the service |
-| `OPENAI_API_KEY` | Yes | - | OpenAI API key for LiteLLM |
-| `AI_MODEL` | No | `gpt-4o-mini` | AI model to use |
+| `OPENAI_API_KEY` | Conditional | - | OpenAI API key (required for GPT models) |
+| `GEMINI_API_KEY` | Conditional | - | Google Gemini API key (required for Gemini models) |
+| `AI_MODEL` | No | `gpt-4o-mini` | AI model to use. Options: `gemini/gemini-1.5-flash`, `gemini/gemini-2.0-flash-exp`, `gpt-4o`, `gpt-4o-mini` |
 | `SENTRY_DSN` | No | - | Sentry DSN for error tracking |
+
+### Recommended Light Models
+
+- **Gemini Flash** (recommended): `gemini/gemini-1.5-flash` - Fast, cost-effective, great quality
+- **Gemini 2.0 Flash** (experimental): `gemini/gemini-2.0-flash-exp` - Latest, faster
+- **GPT-4o Mini**: `gpt-4o-mini` - OpenAI's lightweight model
 
 ## Stopping
 

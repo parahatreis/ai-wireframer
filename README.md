@@ -5,15 +5,15 @@ AI-powered design tool that generates complete HTML designs from text descriptio
 ## 📹 Demo
 
 <p>
-  <a href="https://www.loom.com/share/7b54d97592d84fe39f53a00c893b027d">
+  <a href="https://www.loom.com/share/f69734c458734faba473d912e2c8b7cd">
     Cloverly | Parahat Iljanov - Watch Video
   </a>
 </p>
 
-<a href="https://www.loom.com/share/7b54d97592d84fe39f53a00c893b027d">
-  <img src="https://cdn.loom.com/sessions/thumbnails/7b54d97592d84fe39f53a00c893b027d-557bf27c0f02eb84-full-play.gif">
+<a href="https://www.loom.com/share/f69734c458734faba473d912e2c8b7cd">
+  <img src="https://cdn.loom.com/sessions/thumbnails/f69734c458734faba473d912e2c8b7cd-8fb74f3ab959704a-full-play.gif">
 </a>
-
+<div>
 
 ## Quick Start
 
